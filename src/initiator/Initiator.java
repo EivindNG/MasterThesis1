@@ -1,19 +1,30 @@
 package initiator;
 
+import responder.Responder;
+
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class Initiator {
 
-    private BigInteger Nonce;
-    private ArrayList pid;
+    private Nonce nonce;
+    private ArrayList<Responder> pid;
     private BigInteger KeyEncryptionKey;
     private BigInteger EncryptionKey;
     private BigInteger SharedEncryptionKey;
     private BigInteger Tau;
     private BigInteger sid;
 
-    public Initiator(){
+    @Override
+    public String toString() {
+        return "Initiator{" +
+                "nonce=" + nonce +
+                '}';
+    }
 
+    public Initiator() throws NoSuchAlgorithmException {
+
+        nonce = new Nonce();
     }
 }
