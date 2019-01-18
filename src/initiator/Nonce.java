@@ -1,22 +1,24 @@
 package initiator;
 
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
-import java.util.Random;
+
 
 public class Nonce {
-    private byte[] bytes = new byte[32];
+    private BigInteger nonce;
 
     @Override
     public String toString() {
         return "Nonce{" +
-                "bytes=" + Arrays.toString(bytes) +
+                ", nonce='" + nonce + '\'' +
                 '}';
     }
 
     public Nonce() throws NoSuchAlgorithmException {
-        SecureRandom.getInstanceStrong().nextBytes(bytes);
 
+
+        nonce = new BigInteger(256, SecureRandom.getInstanceStrong());
     }
 }

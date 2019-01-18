@@ -1,12 +1,19 @@
 package initiator;
 
-import server.KeyPairGenerationBKEM;
+import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class KeyEncapsulation {
-    private KeyPairGenerationBKEM keyPair;
+    private BigInteger ek;
+    private BigInteger base;
+    private BigInteger i;
 
+    public KeyEncapsulation(BigInteger ek, BigInteger base) throws NoSuchAlgorithmException {
+        this.ek = ek;
+        this.base = base;
 
-    public KeyEncapsulation(){
+        i = new BigInteger(256, SecureRandom.getInstanceStrong());
 
     }
 }
