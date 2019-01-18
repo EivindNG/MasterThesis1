@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class Initiator {
 
+    private KeyEncapsulation result;
     private Nonce nonce;
     private ArrayList<Responder> pid;
     private BigInteger KeyEncryptionKey;
@@ -19,12 +20,13 @@ public class Initiator {
     @Override
     public String toString() {
         return "Initiator{" +
-                "nonce=" + nonce +
+                "result=" + result +
+                ", nonce=" + nonce +
                 '}';
     }
 
     public Initiator() throws NoSuchAlgorithmException {
-
         nonce = new Nonce();
+
     }
 }

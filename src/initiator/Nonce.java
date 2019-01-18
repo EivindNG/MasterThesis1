@@ -19,6 +19,6 @@ public class Nonce {
     public Nonce() throws NoSuchAlgorithmException {
 
 
-        nonce = new BigInteger(256, SecureRandom.getInstanceStrong());
+        nonce = new BigInteger(64, SecureRandom.getInstanceStrong());
     }
 }
