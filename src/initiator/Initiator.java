@@ -3,11 +3,15 @@ package initiator;
 import responder.Responder;
 
 import java.math.BigInteger;
+
+import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class Initiator {
 
+    private BigInteger id;
+    private KeyPair SkPk;
     private KeyEncapsulation result;
     private Nonce nonce;
     private ArrayList<Responder> pid;
