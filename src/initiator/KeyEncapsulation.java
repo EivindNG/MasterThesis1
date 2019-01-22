@@ -13,6 +13,14 @@ public class KeyEncapsulation {
     private BigInteger modulous = BigInteger.valueOf(13);
     private BigInteger k;
 
+    public BigInteger getC() {
+        return C;
+    }
+
+    public BigInteger getK() {
+        return k;
+    }
+
     @Override
     public String toString() {
         return "KeyEncapsulation{" +

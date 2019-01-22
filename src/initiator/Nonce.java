@@ -7,18 +7,9 @@ import java.util.Arrays;
 
 
 public class Nonce {
-    private BigInteger nonce;
 
-    @Override
-    public String toString() {
-        return "Nonce{" +
-                ", nonce='" + nonce + '\'' +
-                '}';
-    }
+    public static BigInteger Nonce() throws NoSuchAlgorithmException {
 
-    public Nonce() throws NoSuchAlgorithmException {
-
-
-        nonce = new BigInteger(64, SecureRandom.getInstanceStrong());
+        return new BigInteger(64, SecureRandom.getInstanceStrong());
     }
 }

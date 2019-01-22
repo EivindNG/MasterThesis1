@@ -1,6 +1,9 @@
 package initiator;
 
 import responder.Responder;
+import util.IdMaker;
+import util.PublicKeyList;
+import util.PublicPrivateKeyGenerator;
 
 import java.math.BigInteger;
 
@@ -14,7 +17,7 @@ public class Initiator {
     private KeyPair SkPk;
     private KeyEncapsulation result;
     private Nonce nonce;
-    private ArrayList<Responder> pid;
+    private ArrayList<Integer> pid;
     private BigInteger KeyEncryptionKey;
     private BigInteger EncryptionKey;
     private BigInteger SharedEncryptionKey;
@@ -30,6 +33,12 @@ public class Initiator {
     }
 
     public Initiator() throws NoSuchAlgorithmException {
+        PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
+        SkPk = privatepublickey.getPair();
+        id = IdMaker.getNextId();
+        PublicKeyList.getKeyList().put(id,SkPk.getPublic());
+
+
         nonce = new Nonce();
 
     }

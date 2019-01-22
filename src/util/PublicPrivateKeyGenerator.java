@@ -1,3 +1,5 @@
+package util;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -13,6 +15,6 @@ public class PublicPrivateKeyGenerator {
 
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
         keyPairGen.initialize(2048);
-        KeyPair pair = keyPairGen.generateKeyPair();
+        pair = keyPairGen.generateKeyPair();
     }
 }
