@@ -7,24 +7,29 @@ import util.PublicKeyList;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 
 import static util.sidGenerator.GenerateSid;
 
 public class Main {
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, IOException {
-        Initiator test1 = new Initiator();
+    public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SignatureException, InvalidKeyException {
         Server test2 = new Server();
+        Initiator test1 = new Initiator(test2);
+
+        /*
+
         Responder test3 = new Responder();
         ArrayList<BigInteger> list= new ArrayList<>();
         list.add(BigInteger.valueOf(3));
         list.add(BigInteger.valueOf(4));
 
         System.out.println(GenerateSid(BigInteger.valueOf(6),BigInteger.valueOf(2),list,BigInteger.valueOf(5)));
-
+        */
     }
 }
 

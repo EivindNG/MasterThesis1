@@ -7,19 +7,20 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.security.PublicKey;
+import java.util.HashMap;
 
 import static java.security.MessageDigest.*;
 
 public class sidGenerator {
 
-    public static String GenerateSid(BigInteger id, BigInteger Nonce, ArrayList<BigInteger> pid, BigInteger KeyEncryptionKey) throws NoSuchAlgorithmException, IOException {
+    public static String GenerateSid(BigInteger id, BigInteger Nonce, HashMap<BigInteger, PublicKey> pid, BigInteger KeyEncryptionKey) throws NoSuchAlgorithmException, IOException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         outputStream.write(id.toByteArray());
         outputStream.write(Nonce.toByteArray());
-        for(BigInteger ID: pid){
-            outputStream.write(ID.toByteArray());
+        for (BigInteger key : pid.keySet()) {
+            outputStream.write(key.toByteArray());
         }
         outputStream.write(KeyEncryptionKey.toByteArray());
         byte AltSammen[] = outputStream.toByteArray( );

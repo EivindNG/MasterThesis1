@@ -43,13 +43,18 @@ public class Server {
                 outputStream2.write(key.toByteArray());
             }
             outputStream2.write(ekdk.getencryptionKey().toByteArray());
-            byte data[] = outputStream.toByteArray( );
+            byte data[] = outputStream2.toByteArray( );
 
-            sid = sidGenerator();
-            Signing.Sign()
+            sid = sidGenerator.GenerateSid(initiator.getId(), nonce, pid, ekdk.getencryptionKey());
+
+            initiator.checkSid(ekdk.getencryptionKey(),Signing.Sign(SkPk,data));
         }
         else{
             throw new IllegalArgumentException();
         }
+    }
+
+    public BigInteger getId() {
+        return id;
     }
 }
