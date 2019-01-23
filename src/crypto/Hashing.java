@@ -3,7 +3,7 @@ package crypto;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 
-public class hashing {
+public class Hashing {
 
     public static String hash(byte[] data, byte[] messageDigest){
 

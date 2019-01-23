@@ -5,12 +5,12 @@ import java.math.BigInteger;
 public class KeyPairGenerationBKEM {
 
     private BigInteger base = BigInteger.valueOf(3);
-    private BigInteger decryptionKey;
+    private BigInteger decryptionKey = BigInteger.valueOf(5);
     private BigInteger encryptionKey;
     private BigInteger modulous = BigInteger.valueOf(11);
 
-    public KeyPairGenerationBKEM(BigInteger decryptionKey){
-        this.decryptionKey = decryptionKey;
+    public KeyPairGenerationBKEM(){
+
         encryptionKey = base.modPow(decryptionKey,modulous);
     }
 

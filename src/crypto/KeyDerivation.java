@@ -20,7 +20,7 @@ public class KeyDerivation {
         MessageDigest md = MessageDigest.getInstance("PBKDF2");
         byte[] messageDigest = md.digest(AltSammen);
 
-        String hashtext = hashing.hash(AltSammen,messageDigest);
+        String hashtext = Hashing.hash(AltSammen,messageDigest);
         return hashtext;
     }
 }

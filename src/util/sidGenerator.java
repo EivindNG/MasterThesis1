@@ -1,6 +1,6 @@
 package util;
 
-import crypto.hashing;
+import crypto.Hashing;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,7 +28,7 @@ public class sidGenerator {
         MessageDigest md = getInstance("SHA-256");
         byte[] messageDigest = md.digest(AltSammen);
 
-        String hashtext = hashing.hash(AltSammen,messageDigest);
+        String hashtext = Hashing.hash(AltSammen,messageDigest);
 
         return hashtext;
 
