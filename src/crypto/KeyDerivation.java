@@ -6,6 +6,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import static java.security.MessageDigest.getInstance;
+
 public class KeyDerivation {
 
     public static String KDF(BigInteger tall, BigInteger k, String sid) throws NoSuchAlgorithmException, IOException {
@@ -17,7 +19,7 @@ public class KeyDerivation {
 
         byte AltSammen[] = outputStream.toByteArray( );
 
-        MessageDigest md = MessageDigest.getInstance("PBKDF2");
+        MessageDigest md = getInstance("SHA-256");
         byte[] messageDigest = md.digest(AltSammen);
 
         String hashtext = Hashing.hash(AltSammen,messageDigest);

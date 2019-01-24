@@ -13,7 +13,7 @@ public class PublicPrivateKeyGenerator {
 
     public PublicPrivateKeyGenerator() throws NoSuchAlgorithmException {
 
-        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("DSA");
+        KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
         keyPairGen.initialize(2048);
         pair = keyPairGen.generateKeyPair();
     }

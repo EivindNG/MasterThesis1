@@ -5,6 +5,9 @@ import server.Server;
 import util.IdMaker;
 import util.PublicKeyList;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -17,9 +20,10 @@ import static util.sidGenerator.GenerateSid;
 
 public class Main {
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SignatureException, InvalidKeyException {
+    public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SignatureException, InvalidKeyException, IllegalBlockSizeException, ClassNotFoundException, BadPaddingException, NoSuchPaddingException {
+        Responder test3 = new Responder();
         Server test2 = new Server();
-        Initiator test1 = new Initiator(test2);
+        Initiator test1 = new Initiator(test2,test3);
 
         /*
 

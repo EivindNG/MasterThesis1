@@ -5,6 +5,9 @@ import crypto.Hashing;
 import initiator.Initiator;
 import util.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -18,14 +21,15 @@ public class Server {
     private KeyPairGenerationBKEM ekdk;
     private String sid;
 
+
     public Server() throws NoSuchAlgorithmException {
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
-        id = IdMaker.getNextId();
+        id = IdMaker.getNextId().add(BigInteger.valueOf(100));
         PublicKeyList.getKeyList().put(id,SkPk.getPublic());
     }
 
-    public void submitNonce(BigInteger nonce, HashMap<BigInteger, PublicKey> pid, byte[] signing, Initiator initiator) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public void submitNonce(BigInteger nonce, HashMap<BigInteger, PublicKey> pid, byte[] signing, Initiator initiator) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, ClassNotFoundException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         outputStream.write(nonce.toByteArray());
@@ -35,6 +39,7 @@ public class Server {
         byte AltSammen[] = outputStream.toByteArray( );
 
         if (SignVerifyer.Verify(signing, PublicKeyList.getKeyList().get(initiator.getId()), AltSammen)){
+
             ekdk = new KeyPairGenerationBKEM();
 
             ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream( );
@@ -57,4 +62,5 @@ public class Server {
     public BigInteger getId() {
         return id;
     }
+
 }

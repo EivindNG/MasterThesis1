@@ -23,6 +23,7 @@ public class sidGenerator {
             outputStream.write(key.toByteArray());
         }
         outputStream.write(KeyEncryptionKey.toByteArray());
+
         byte AltSammen[] = outputStream.toByteArray( );
 
 
