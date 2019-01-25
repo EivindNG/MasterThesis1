@@ -13,13 +13,13 @@ import java.security.*;
 import java.util.ArrayList;
 
 public class EncryptionPk {
-       private byte [] ciphertext;
+    private byte[] ciphertext;
+    private byte[] ciphertextKey;
+
 
     public byte[] getCiphertextKey() {
         return ciphertextKey;
     }
-
-    private byte[] ciphertextKey;
 
     public byte[] getCiphertext() {
         return ciphertext;
@@ -45,7 +45,7 @@ public class EncryptionPk {
 
         // Generate key
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
-        kgen.init(256);
+        kgen.init(128);
         SecretKey aesKey = kgen.generateKey();
 
         // Encrypt cipher
@@ -58,5 +58,6 @@ public class EncryptionPk {
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
         cipher.init(Cipher.ENCRYPT_MODE, pubkey);
         this.ciphertextKey = cipher.doFinal(aesKey.getEncoded());
+        System.out.println(pubkey);
     }
 }

@@ -29,7 +29,7 @@ public class Server {
             NoSuchAlgorithmException {
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
-        id = IdMaker.getNextId().add(BigInteger.valueOf(100));
+        id = IdMaker.getNextId().add(BigInteger.valueOf(50));
         PublicKeyList.getKeyList().put(id,SkPk.getPublic());
     }
 

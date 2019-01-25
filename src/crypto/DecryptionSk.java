@@ -31,6 +31,7 @@ public class DecryptionSk {
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
 
         byte[] aesKeyBytes = cipher.doFinal(data.getCiphertextKey());
+
         SecretKey aesKey = new SecretKeySpec(aesKeyBytes, 0, aesKeyBytes.length, "AES");
 
 
