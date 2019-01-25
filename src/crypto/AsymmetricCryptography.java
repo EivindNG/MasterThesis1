@@ -6,7 +6,9 @@ import java.security.NoSuchAlgorithmException;
 
 public class AsymmetricCryptography {
 
-    public static Cipher AsymmetricCryptography() throws NoSuchAlgorithmException, NoSuchPaddingException {
+    public static Cipher AsymmetricCryptography() throws
+            NoSuchAlgorithmException,
+            NoSuchPaddingException {
         return Cipher.getInstance("RSA");
     }
 }

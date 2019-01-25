@@ -29,13 +29,21 @@ public class Initiator {
     private Server server;
     private Responder responder;
     private KeyEncapsulation Encap;
-    private byte[] encryptedData;
+    private EncryptionPk encryptedData;
 
     public BigInteger getId() {
         return id;
     }
 
-    public Initiator(Server server, Responder responder) throws NoSuchAlgorithmException, IOException, SignatureException, InvalidKeyException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, ClassNotFoundException {
+    public Initiator(Server server, Responder responder) throws
+            NoSuchAlgorithmException,
+            IOException,
+            SignatureException,
+            InvalidKeyException,
+            NoSuchPaddingException,
+            BadPaddingException,
+            IllegalBlockSizeException,
+            ClassNotFoundException, InvalidAlgorithmParameterException {
         this.server = server;
         this.responder = responder;
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
@@ -45,7 +53,15 @@ public class Initiator {
         startServer();
     }
 
-    public void startServer() throws IOException, NoSuchAlgorithmException, SignatureException, InvalidKeyException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, ClassNotFoundException {
+    public void startServer() throws
+            IOException,
+            NoSuchAlgorithmException,
+            SignatureException,
+            InvalidKeyException,
+            NoSuchPaddingException,
+            BadPaddingException,
+            IllegalBlockSizeException,
+            ClassNotFoundException, InvalidAlgorithmParameterException {
         nonce = Nonce.Nonce();
         pid = PublicKeyList.getKeyList();
 
@@ -54,12 +70,19 @@ public class Initiator {
         for (BigInteger key : pid.keySet()) {
             outputStream.write(key.toByteArray());
         }
-        byte AltSammen[] = outputStream.toByteArray();
 
-        server.submitNonce(nonce, pid, Signing.Sign(SkPk, AltSammen), this);
+        server.submitNonce(nonce, pid, Signing.Sign(SkPk, outputStream.toByteArray()), this);
 
     }
-    public void checkSid(BigInteger KeyEncryptionKey, byte[] sign) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException, NoSuchPaddingException, BadPaddingException, IllegalBlockSizeException, ClassNotFoundException {
+    public void checkSid(BigInteger KeyEncryptionKey, byte[] sign) throws
+            IOException,
+            NoSuchAlgorithmException,
+            InvalidKeyException,
+            SignatureException,
+            NoSuchPaddingException,
+            BadPaddingException,
+            IllegalBlockSizeException,
+            ClassNotFoundException, InvalidAlgorithmParameterException {
 
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream( );
         outputStream2.write(nonce.toByteArray());
@@ -79,15 +102,24 @@ public class Initiator {
             throw new IllegalArgumentException();
         }
     }
-    public void EncapAndCreateKey() throws NoSuchAlgorithmException, IOException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException, SignatureException, ClassNotFoundException {
+    public void EncapAndCreateKey() throws
+            NoSuchAlgorithmException,
+            IOException,
+            IllegalBlockSizeException,
+            InvalidKeyException,
+            BadPaddingException,
+            NoSuchPaddingException,
+            SignatureException,
+            ClassNotFoundException,
+            InvalidAlgorithmParameterException {
         Encap = new KeyEncapsulation(KeyEncryptionKey);
         SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK(), this.sid);
         Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK(),this.sid);
 
         for (BigInteger key : pid.keySet()){
             if ((key.compareTo(BigInteger.valueOf(100)))== 1){
-                encryptedData = EncryptionPk.Encrypt(pid.get(key), Encap.getC(), this.KeyEncryptionKey, this.Tau, sid);
-                responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData),id);
+                encryptedData = new EncryptionPk(pid.get(key), Encap.getC(), this.KeyEncryptionKey, this.Tau, sid);
+                responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),id);
             }
             else {
                 continue;

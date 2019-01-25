@@ -10,7 +10,9 @@ import static java.security.MessageDigest.getInstance;
 
 public class KeyDerivation {
 
-    public static String KDF(BigInteger tall, BigInteger k, String sid) throws NoSuchAlgorithmException, IOException {
+    public static String KDF(BigInteger tall, BigInteger k, String sid) throws
+            NoSuchAlgorithmException,
+            IOException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         outputStream.write(tall.toByteArray());

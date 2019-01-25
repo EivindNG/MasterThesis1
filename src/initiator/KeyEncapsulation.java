@@ -20,7 +20,8 @@ public class KeyEncapsulation {
         return k;
     }
 
-    public KeyEncapsulation(BigInteger ek) throws NoSuchAlgorithmException {
+    public KeyEncapsulation(BigInteger ek) throws
+            NoSuchAlgorithmException {
         i = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modulous);
         C = base.modPow(i,modulous);
         k = ek.modPow(i,modulous);

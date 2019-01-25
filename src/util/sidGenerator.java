@@ -14,7 +14,9 @@ import static java.security.MessageDigest.*;
 
 public class sidGenerator {
 
-    public static String GenerateSid(BigInteger id, BigInteger Nonce, HashMap<BigInteger, PublicKey> pid, BigInteger KeyEncryptionKey) throws NoSuchAlgorithmException, IOException {
+    public static String GenerateSid(BigInteger id, BigInteger Nonce, HashMap<BigInteger, PublicKey> pid, BigInteger KeyEncryptionKey) throws
+            NoSuchAlgorithmException,
+            IOException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         outputStream.write(id.toByteArray());

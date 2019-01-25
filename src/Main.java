@@ -10,19 +10,25 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.SignatureException;
+import java.security.*;
 import java.util.ArrayList;
 
 import static util.sidGenerator.GenerateSid;
 
 public class Main {
 
-    public static void main(String[] args) throws NoSuchAlgorithmException, IOException, SignatureException, InvalidKeyException, IllegalBlockSizeException, ClassNotFoundException, BadPaddingException, NoSuchPaddingException {
-        Responder test3 = new Responder();
+    public static void main(String[] args) throws
+            NoSuchAlgorithmException,
+            IOException,
+            SignatureException,
+            InvalidKeyException,
+            IllegalBlockSizeException,
+            ClassNotFoundException,
+            BadPaddingException,
+            NoSuchPaddingException, InvalidAlgorithmParameterException {
+
         Server test2 = new Server();
+        Responder test3 = new Responder(test2);
         Initiator test1 = new Initiator(test2,test3);
 
         /*
