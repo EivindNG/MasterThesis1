@@ -23,6 +23,7 @@ public class Responder {
     private Server server;
     private String SharedEncryptionKey;
 
+
     public Responder(Server server) throws
             NoSuchAlgorithmException {
         this.server = server;
@@ -30,7 +31,6 @@ public class Responder {
         SkPk = privatepublickey.getPair();
         id = IdMaker.getNextId().add(BigInteger.valueOf(100));
         PublicKeyList.getKeyList().put(id,SkPk.getPublic());
-        System.out.println(id);
     }
 
     public void DecryptData(EncryptionPk encryptedData, byte[] sign, BigInteger initiatorID) throws
@@ -43,18 +43,17 @@ public class Responder {
             NoSuchPaddingException,
             IOException,
             InvalidAlgorithmParameterException {
-        System.out.println(SkPk.getPublic());
         if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiatorID),encryptedData.getCiphertext())){
             decryptedData = DecryptionSk.Decrypt(encryptedData,SkPk.getPrivate());
 
             System.out.println("Great success, STAGE 2");
 
-            BlindAndSign(decryptedData.getC(),decryptedData.getSid(),decryptedData.getKEK());
-        }
-    }
+            System.out.println(decryptedData.getC());
+            System.out.println("test2");
 
-    public BigInteger getId() {
-        return id;
+            BlindAndSign(decryptedData.getC(),decryptedData.getSid(),decryptedData.getKEK());
+
+        }
     }
 
     public void BlindAndSign(BigInteger C, String sid, BigInteger ek) throws NoSuchAlgorithmException,
@@ -82,12 +81,17 @@ public class Responder {
 
             BigInteger k = Unblinding.Unblind(blindk,blind.getUnblindKey());
 
+
             SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), k, sid);
             String tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k, sid);
+
+            System.out.println(k);
+
             ValidateKey(tauR);
         }
     }
     public void ValidateKey(String tauR){
+
         if (tauR.equals(decryptedData.getTau())){
             System.out.println("Great success, STAGE 3. Key is shared");
         }
@@ -95,6 +99,9 @@ public class Responder {
             System.out.println("Something bad happened");
             throw new IllegalArgumentException();
         }
+    }
+    public BigInteger getId() {
+        return id;
     }
 }
 

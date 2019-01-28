@@ -116,11 +116,9 @@ public class Initiator {
         SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK(), this.sid);
         Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK(),this.sid);
 
+
         for (BigInteger key : pid.keySet()){
             if ((key.compareTo(BigInteger.valueOf(100)))== 1){
-                System.out.println(pid.keySet());
-                System.out.println(key);
-                System.out.println(pid.get(key));
                 encryptedData = new EncryptionPk(pid.get(key), Encap.getC(), this.KeyEncryptionKey, this.Tau, sid);
                 responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),id);
             }

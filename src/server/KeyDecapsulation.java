@@ -3,11 +3,8 @@ package server;
 import java.math.BigInteger;
 
 public class KeyDecapsulation {
-
-    private BigInteger BlindC;
-    private BigInteger Blindk;
-    private BigInteger decryptionKey;
-    private static BigInteger modolus = BigInteger.valueOf(13);
+    
+    private static BigInteger modolus = BigInteger.valueOf(263);
 
     public static BigInteger Decapsulate(BigInteger BlindC, BigInteger decryptionKey){
 

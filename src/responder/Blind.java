@@ -6,8 +6,22 @@ import java.security.SecureRandom;
 
 public class Blind {
 
-    private BigInteger t;
     private BigInteger BlindC;
+    private BigInteger UnblindKey;
+    private BigInteger modolus = BigInteger.valueOf(263);
+    private BigInteger t = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modolus);
+
+
+    public Blind(BigInteger C) throws NoSuchAlgorithmException {
+
+        BlindC = C.modPow(t,modolus);
+        UnblindKey = t.modInverse(modolus);
+
+        System.out.println(C);
+        System.out.println(BlindC.modPow(UnblindKey,modolus));
+
+    }
+
 
     public BigInteger getBlindC() {
         return BlindC;
@@ -15,14 +29,5 @@ public class Blind {
 
     public BigInteger getUnblindKey() {
         return UnblindKey;
-    }
-
-    private BigInteger UnblindKey;
-    private BigInteger modolus = BigInteger.valueOf(13);
-
-    public Blind(BigInteger C) throws NoSuchAlgorithmException {
-        t = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modolus);
-        BlindC = C.modPow(t,modolus);
-        UnblindKey = t.modInverse(modolus);
     }
 }

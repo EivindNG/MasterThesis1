@@ -6,10 +6,10 @@ import java.security.SecureRandom;
 
 public class KeyEncapsulation {
 
-    private BigInteger base = BigInteger.valueOf(3);
+    private BigInteger base = BigInteger.valueOf(11);
     private BigInteger i;
     private BigInteger C;
-    private BigInteger modulous = BigInteger.valueOf(13);
+    private BigInteger modulous = BigInteger.valueOf(263);
     private BigInteger k;
 
     public BigInteger getC() {
@@ -23,7 +23,9 @@ public class KeyEncapsulation {
     public KeyEncapsulation(BigInteger ek) throws
             NoSuchAlgorithmException {
         i = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modulous);
-        C = base.modPow(i,modulous);
-        k = ek.modPow(i,modulous);
+        this.C = base.modPow(i,modulous);
+        this.k = ek.modPow(i,modulous);
+        System.out.println(C);
+        System.out.println("test");
     }
 }
