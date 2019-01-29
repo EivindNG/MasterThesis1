@@ -48,9 +48,6 @@ public class Responder {
 
             System.out.println("Great success, STAGE 2");
 
-            System.out.println(decryptedData.getC());
-            System.out.println("test2");
-
             BlindAndSign(decryptedData.getC(),decryptedData.getSid(),decryptedData.getKEK());
 
         }
@@ -85,8 +82,6 @@ public class Responder {
             SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), k, sid);
             String tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k, sid);
 
-            System.out.println(k);
-
             ValidateKey(tauR);
         }
     }
@@ -94,6 +89,7 @@ public class Responder {
 
         if (tauR.equals(decryptedData.getTau())){
             System.out.println("Great success, STAGE 3. Key is shared");
+            System.out.println(SharedEncryptionKey);
         }
         else {
             System.out.println("Something bad happened");

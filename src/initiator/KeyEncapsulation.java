@@ -22,10 +22,9 @@ public class KeyEncapsulation {
 
     public KeyEncapsulation(BigInteger ek) throws
             NoSuchAlgorithmException {
-        i = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modulous);
+
+        i = new BigInteger(256, SecureRandom.getInstanceStrong()).nextProbablePrime().mod(modulous);
         this.C = base.modPow(i,modulous);
         this.k = ek.modPow(i,modulous);
-        System.out.println(C);
-        System.out.println("test");
     }
 }

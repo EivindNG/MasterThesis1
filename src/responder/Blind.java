@@ -9,16 +9,13 @@ public class Blind {
     private BigInteger BlindC;
     private BigInteger UnblindKey;
     private BigInteger modolus = BigInteger.valueOf(263);
-    private BigInteger t = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modolus);
+    private BigInteger t = new BigInteger(256, SecureRandom.getInstanceStrong()).nextProbablePrime().mod(modolus);
 
 
     public Blind(BigInteger C) throws NoSuchAlgorithmException {
 
-        BlindC = C.modPow(t,modolus);
-        UnblindKey = t.modInverse(modolus);
-
-        System.out.println(C);
-        System.out.println(BlindC.modPow(UnblindKey,modolus));
+        this.BlindC = C.modPow(t,modolus);
+        this.UnblindKey = t.modInverse(modolus.add(BigInteger.valueOf(-1)));
 
     }
 
