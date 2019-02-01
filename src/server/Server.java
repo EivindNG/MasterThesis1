@@ -1,15 +1,11 @@
 package server;
 
-
-import crypto.Hashing;
 import initiator.Initiator;
 import responder.Responder;
 import util.*;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -26,7 +22,9 @@ public class Server {
 
 
     public Server() throws
+
             NoSuchAlgorithmException {
+
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
         id = IdMaker.getNextId().add(BigInteger.valueOf(50));

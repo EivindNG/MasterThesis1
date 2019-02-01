@@ -8,7 +8,6 @@ public class KeyDecapsulation {
 
     public static BigInteger Decapsulate(BigInteger BlindC, BigInteger decryptionKey){
 
-
         return BlindC.modPow(decryptionKey,modolus);
     }
 }

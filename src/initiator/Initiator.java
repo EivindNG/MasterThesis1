@@ -5,7 +5,6 @@ import crypto.KeyDerivation;
 import responder.Responder;
 import server.Server;
 import util.*;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -13,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Initiator {
@@ -21,7 +19,7 @@ public class Initiator {
     private BigInteger id;
     private KeyPair SkPk;
     private BigInteger nonce;
-    private HashMap<BigInteger, PublicKey> pid;
+    private HashMap<BigInteger, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
     private BigInteger KeyEncryptionKey;
     private String SharedEncryptionKey;
     private String Tau;

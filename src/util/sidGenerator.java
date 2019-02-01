@@ -1,7 +1,6 @@
 package util;
 
 import crypto.Hashing;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;

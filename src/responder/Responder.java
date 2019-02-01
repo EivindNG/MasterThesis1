@@ -53,7 +53,8 @@ public class Responder {
         }
     }
 
-    public void BlindAndSign(BigInteger C, String sid, BigInteger ek) throws NoSuchAlgorithmException,
+    public void BlindAndSign(BigInteger C, String sid, BigInteger ek) throws
+            NoSuchAlgorithmException,
             IOException,
             SignatureException,
             InvalidKeyException {
@@ -68,7 +69,11 @@ public class Responder {
         server.Decapsulate(sid, blind.getBlindC(), Signing.Sign(SkPk,outputStream.toByteArray()),this);
     }
 
-    public void UnblindAndKDF(String sid, BigInteger blindk, byte[] sign, Server server) throws IOException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
+    public void UnblindAndKDF(String sid, BigInteger blindk, byte[] sign, Server server) throws
+            IOException,
+            NoSuchAlgorithmException,
+            InvalidKeyException,
+            SignatureException {
 
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
         outputStream2.write(sid.getBytes());
@@ -93,6 +98,7 @@ public class Responder {
         }
         else {
             System.out.println("Something bad happened");
+            SharedEncryptionKey = ""; /*Legge inn slik at det er mulig med flere Encryption keys. En for hver sid, lage en hashmap med keys og corresponding sid.*/
             throw new IllegalArgumentException();
         }
     }

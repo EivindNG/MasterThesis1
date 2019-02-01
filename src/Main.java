@@ -1,19 +1,11 @@
 import initiator.Initiator;
 import responder.Responder;
-import server.KeyPairGenerationBKEM;
 import server.Server;
-import util.IdMaker;
-import util.PublicKeyList;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.*;
-import java.util.ArrayList;
-
-import static util.sidGenerator.GenerateSid;
 
 public class Main {
 
