@@ -1,8 +1,12 @@
 package responder;
 
+import crypto.Constants;
 import crypto.DecryptionSk;
 import crypto.EncryptionPk;
 import crypto.KeyDerivation;
+import org.bouncycastle.jce.ECNamedCurveTable;
+import org.bouncycastle.jce.spec.ECParameterSpec;
+import org.bouncycastle.math.ec.ECPoint;
 import server.Server;
 import util.*;
 
@@ -25,7 +29,9 @@ public class Responder {
 
 
     public Responder(Server server) throws
-            NoSuchAlgorithmException {
+            NoSuchAlgorithmException,
+            NoSuchProviderException,
+            InvalidAlgorithmParameterException {
         this.server = server;
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
@@ -42,50 +48,50 @@ public class Responder {
             BadPaddingException,
             NoSuchPaddingException,
             IOException,
-            InvalidAlgorithmParameterException {
+            InvalidAlgorithmParameterException, NoSuchProviderException {
         if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiatorID),encryptedData.getCiphertext())){
             decryptedData = DecryptionSk.Decrypt(encryptedData,SkPk.getPrivate());
 
             System.out.println("Great success, STAGE 2");
 
-            BlindAndSign(decryptedData.getC(),decryptedData.getSid(),decryptedData.getKEK());
+            BlindAndSign(Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getC()),decryptedData.getSid(),Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getKEK()));
 
         }
     }
 
-    public void BlindAndSign(BigInteger C, String sid, BigInteger ek) throws
+    public void BlindAndSign(ECPoint C, String sid, ECPoint ek) throws
             NoSuchAlgorithmException,
             IOException,
             SignatureException,
-            InvalidKeyException {
+            InvalidKeyException, NoSuchProviderException {
 
         blind = new Blind(C);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         outputStream.write(sid.getBytes());
-        outputStream.write(ek.toByteArray());
-        outputStream.write(blind.getBlindC().toByteArray());
+        outputStream.write(ek.getEncoded(false));
+        outputStream.write(blind.getBlindC().getEncoded(false));
 
         server.Decapsulate(sid, blind.getBlindC(), Signing.Sign(SkPk,outputStream.toByteArray()),this);
     }
 
-    public void UnblindAndKDF(String sid, BigInteger blindk, byte[] sign, Server server) throws
+    public void UnblindAndKDF(String sid, ECPoint blindk, byte[] sign, Server server) throws
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
-            SignatureException {
+            SignatureException, NoSuchProviderException {
 
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
         outputStream2.write(sid.getBytes());
-        outputStream2.write(blindk.toByteArray());
+        outputStream2.write(blindk.getEncoded(false));
 
         if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server.getId()),outputStream2.toByteArray())){
 
-            BigInteger k = Unblinding.Unblind(blindk,blind.getUnblindKey());
+            ECPoint k = Unblinding.Unblind(blindk,blind.getUnblindKey());
 
 
-            SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), k, sid);
-            String tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k, sid);
+            SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), k.getAffineXCoord().toBigInteger(), sid);
+            String tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k.getAffineXCoord().toBigInteger(), sid);
 
             ValidateKey(tauR);
         }
@@ -97,9 +103,8 @@ public class Responder {
             System.out.println(SharedEncryptionKey);
         }
         else {
-            System.out.println("Something bad happened");
             SharedEncryptionKey = ""; /*Legge inn slik at det er mulig med flere Encryption keys. En for hver sid, lage en hashmap med keys og corresponding sid.*/
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Something bad happened");
         }
     }
     public BigInteger getId() {

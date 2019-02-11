@@ -2,6 +2,7 @@ package initiator;
 
 import crypto.EncryptionPk;
 import crypto.KeyDerivation;
+import org.bouncycastle.math.ec.ECPoint;
 import responder.Responder;
 import server.Server;
 import util.*;
@@ -20,7 +21,7 @@ public class Initiator {
     private KeyPair SkPk;
     private BigInteger nonce;
     private HashMap<BigInteger, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
-    private BigInteger KeyEncryptionKey;
+    private ECPoint KeyEncryptionKey;
     private String SharedEncryptionKey;
     private String Tau;
     private String sid;
@@ -41,7 +42,9 @@ public class Initiator {
             NoSuchPaddingException,
             BadPaddingException,
             IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException {
+            ClassNotFoundException,
+            InvalidAlgorithmParameterException,
+            NoSuchProviderException {
         this.server = server;
         this.responder = responder;
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
@@ -59,7 +62,7 @@ public class Initiator {
             NoSuchPaddingException,
             BadPaddingException,
             IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException {
+            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
         nonce = Nonce.Nonce();
         pid = PublicKeyList.getKeyList();
 
@@ -72,7 +75,7 @@ public class Initiator {
         server.submitNonce(nonce, pid, Signing.Sign(SkPk, outputStream.toByteArray()), this);
 
     }
-    public void checkSid(BigInteger KeyEncryptionKey, byte[] sign) throws
+    public void checkSid(ECPoint KeyEncryptionKey, byte[] sign) throws
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
@@ -80,14 +83,14 @@ public class Initiator {
             NoSuchPaddingException,
             BadPaddingException,
             IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException {
+            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
 
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream( );
         outputStream2.write(nonce.toByteArray());
         for (BigInteger key : pid.keySet()) {
             outputStream2.write(key.toByteArray());
         }
-        outputStream2.write(KeyEncryptionKey.toByteArray());
+        outputStream2.write(KeyEncryptionKey.getEncoded(false));
         byte data[] = outputStream2.toByteArray( );
 
         if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server.getId()), data)){
@@ -109,14 +112,18 @@ public class Initiator {
             NoSuchPaddingException,
             SignatureException,
             ClassNotFoundException,
-            InvalidAlgorithmParameterException {
+            InvalidAlgorithmParameterException, NoSuchProviderException {
+
+
         Encap = new KeyEncapsulation(KeyEncryptionKey);
-        SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK(), this.sid);
-        Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK(),this.sid);
+        SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK().getAffineXCoord().toBigInteger(), this.sid);
+        Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK().getAffineXCoord().toBigInteger(),this.sid);
 
 
         for (BigInteger key : pid.keySet()){
             if ((key.compareTo(BigInteger.valueOf(100)))== 1){
+
+
                 encryptedData = new EncryptionPk(pid.get(key), Encap.getC(), this.KeyEncryptionKey, this.Tau, sid);
                 responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),id);
             }

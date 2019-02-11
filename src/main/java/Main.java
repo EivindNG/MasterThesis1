@@ -1,4 +1,5 @@
 import initiator.Initiator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import responder.Responder;
 import server.Server;
 import javax.crypto.BadPaddingException;
@@ -17,7 +18,11 @@ public class Main {
             IllegalBlockSizeException,
             ClassNotFoundException,
             BadPaddingException,
-            NoSuchPaddingException, InvalidAlgorithmParameterException {
+            NoSuchPaddingException,
+            InvalidAlgorithmParameterException,
+            NoSuchProviderException {
+
+        Security.addProvider(new BouncyCastleProvider());
 
         Server test2 = new Server();
         Responder test3 = new Responder(test2);

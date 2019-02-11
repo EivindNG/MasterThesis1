@@ -1,6 +1,7 @@
 package server;
 
 import initiator.Initiator;
+import org.bouncycastle.math.ec.ECPoint;
 import responder.Responder;
 import util.*;
 import javax.crypto.BadPaddingException;
@@ -23,7 +24,7 @@ public class Server {
 
     public Server() throws
 
-            NoSuchAlgorithmException {
+            NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
 
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
@@ -40,7 +41,7 @@ public class Server {
             NoSuchPaddingException,
             BadPaddingException,
             IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException {
+            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         outputStream.write(nonce.toByteArray());
@@ -58,7 +59,7 @@ public class Server {
             for (BigInteger key : pid.keySet()) {
                 outputStream2.write(key.toByteArray());
             }
-            outputStream2.write(ekdk.getencryptionKey().toByteArray());
+            outputStream2.write(ekdk.getencryptionKey().getEncoded(false));
 
             sid = sidGenerator.GenerateSid(initiator.getId(), nonce, pid, ekdk.getencryptionKey());
 
@@ -69,25 +70,25 @@ public class Server {
         }
     }
 
-    public void Decapsulate(String sid, BigInteger blindC, byte[] sign, Responder responder) throws
+    public void Decapsulate(String sid, ECPoint blindC, byte[] sign, Responder responder) throws
 
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
-            SignatureException {
+            SignatureException, NoSuchProviderException {
 
         ByteArrayOutputStream outputStream3 = new ByteArrayOutputStream();
         outputStream3.write(sid.getBytes());
-        outputStream3.write(ekdk.getencryptionKey().toByteArray());
-        outputStream3.write(blindC.toByteArray());
+        outputStream3.write(ekdk.getencryptionKey().getEncoded(false));
+        outputStream3.write(blindC.getEncoded(false));
 
         if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(responder.getId()),outputStream3.toByteArray())){
             if (pid.containsKey(responder.getId())){
-                BigInteger blindk = KeyDecapsulation.Decapsulate(blindC,ekdk.getdecryptionKey());
+                ECPoint blindk = KeyDecapsulation.Decapsulate(blindC,ekdk.getdecryptionKey());
 
                 ByteArrayOutputStream outputStream4 = new ByteArrayOutputStream();
                 outputStream4.write(sid.getBytes());
-                outputStream4.write(blindk.toByteArray());
+                outputStream4.write(blindk.getEncoded(false));
 
                 responder.UnblindAndKDF(sid, blindk, Signing.Sign(SkPk,outputStream4.toByteArray()),this);
             }

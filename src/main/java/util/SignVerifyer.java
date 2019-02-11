@@ -1,5 +1,7 @@
 package util;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.security.*;
 
 public class SignVerifyer {
@@ -7,9 +9,11 @@ public class SignVerifyer {
     public static boolean Verify(byte[] signature, PublicKey publicKey, byte[] data) throws
             NoSuchAlgorithmException,
             InvalidKeyException,
-            SignatureException {
+            SignatureException,
+            NoSuchProviderException {
 
-        Signature sign = Signature.getInstance("SHA256withRSA");
+        Security.addProvider(new BouncyCastleProvider());
+        Signature sign = Signature.getInstance("SHA256withECDSA","BC");
         sign.initVerify(publicKey);
         sign.update(data);
 

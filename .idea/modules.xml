@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HelloWorld.iml" filepath="$PROJECT_DIR$/HelloWorld.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/colin.boyd.MasterThesis.iml" filepath="$PROJECT_DIR$/.idea/modules/colin.boyd.MasterThesis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/colin.boyd.MasterThesis.main.iml" filepath="$PROJECT_DIR$/.idea/modules/colin.boyd.MasterThesis.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/colin.boyd.MasterThesis.test.iml" filepath="$PROJECT_DIR$/.idea/modules/colin.boyd.MasterThesis.test.iml" />
     </modules>
   </component>
 </project>
-

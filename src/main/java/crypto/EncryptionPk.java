@@ -1,16 +1,18 @@
 package crypto;
 
+import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.math.ec.ECPoint;
 import util.CombineData;
 
 import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.*;
-import java.util.ArrayList;
+
 
 public class EncryptionPk {
     private byte[] ciphertext;
@@ -25,14 +27,13 @@ public class EncryptionPk {
         return ciphertext;
     }
 
-    public EncryptionPk(PublicKey pubkey, BigInteger C, BigInteger KEK, String tau, String sid) throws
+    public EncryptionPk(PublicKey pubkey, ECPoint C, ECPoint KEK, String tau, String sid) throws
             IOException,
             NoSuchPaddingException,
             NoSuchAlgorithmException,
             InvalidKeyException,
             BadPaddingException,
-            IllegalBlockSizeException, InvalidAlgorithmParameterException {
-
+            IllegalBlockSizeException, InvalidAlgorithmParameterException, NoSuchProviderException {
 
         CombineData data = new CombineData(C,KEK,tau,sid);
 
@@ -56,8 +57,14 @@ public class EncryptionPk {
         encryptCipher.init(Cipher.ENCRYPT_MODE, aesKey,iv);
         this.ciphertext = encryptCipher.doFinal(dataToBeEncrypted);
 
-
+        /*
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
+        */
+
+        IESCipher c1 = new org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher.ECIES();
+
+        Cipher cipher = Cipher.getInstance("ECIES","BC");
+
         cipher.init(Cipher.ENCRYPT_MODE, pubkey);
         this.ciphertextKey = cipher.doFinal(aesKey.getEncoded());
 
