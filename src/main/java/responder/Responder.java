@@ -100,7 +100,7 @@ public class Responder {
 
         if (tauR.equals(decryptedData.getTau())){
             System.out.println("Great success, STAGE 3. Key is shared");
-            System.out.println(SharedEncryptionKey);
+
         }
         else {
             SharedEncryptionKey = ""; /*Legge inn slik at det er mulig med flere Encryption keys. En for hver sid, lage en hashmap med keys og corresponding sid.*/

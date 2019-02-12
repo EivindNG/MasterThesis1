@@ -25,7 +25,7 @@ public class KeyDerivation {
         byte[] messageDigest = md.digest(AltSammen);
 
         String hashtext = Hashing.hash(AltSammen,messageDigest);
-        System.out.println(hashtext);
+
         return hashtext;
     }
 }

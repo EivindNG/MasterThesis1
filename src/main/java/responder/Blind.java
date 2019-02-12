@@ -13,8 +13,8 @@ public class Blind {
     ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
     private ECPoint BlindC;
     private BigInteger UnblindKey;
-    private BigInteger modolus = BigInteger.valueOf(263);
-    private BigInteger t = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(ecSpec.getCurve().getOrder());
+    private BigInteger modolus = ecSpec.getN();
+    private BigInteger t = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modolus);
 
 
     public Blind(ECPoint C) throws NoSuchAlgorithmException {
@@ -22,11 +22,9 @@ public class Blind {
 
         this.BlindC = C.multiply(t).normalize();
 
-
-
         this.UnblindKey = t.modInverse(modolus);
 
-        ECPoint test = BlindC.multiply(UnblindKey).normalize();
+
 
     }
 
