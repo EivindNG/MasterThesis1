@@ -9,10 +9,13 @@ import util.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.util.Base64;
 import java.util.HashMap;
 
 public class Initiator {
@@ -22,13 +25,10 @@ public class Initiator {
     private BigInteger nonce;
     private HashMap<BigInteger, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
     private ECPoint KeyEncryptionKey;
-    private String SharedEncryptionKey;
-    private String Tau;
+    private SecretKeySpec SharedEncryptionKey;
     private String sid;
     private Server server;
     private Responder responder;
-    private KeyEncapsulation Encap;
-    private EncryptionPk encryptedData;
 
     public BigInteger getId() {
         return id;
@@ -115,16 +115,20 @@ public class Initiator {
             InvalidAlgorithmParameterException, NoSuchProviderException {
 
 
-        Encap = new KeyEncapsulation(KeyEncryptionKey);
-        SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK().getAffineXCoord().toBigInteger(), this.sid);
-        Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK().getAffineXCoord().toBigInteger(),this.sid);
+        KeyEncapsulation Encap = new KeyEncapsulation(KeyEncryptionKey);
+        String originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK().getAffineXCoord().toBigInteger(), this.sid);
+        String Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK().getAffineXCoord().toBigInteger(),this.sid);
+
+
+        byte[] decodedKey = Base64.getDecoder().decode(originalKey);
+        this.SharedEncryptionKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
 
 
         for (BigInteger key : pid.keySet()){
             if ((key.compareTo(BigInteger.valueOf(100)))== 1){
 
 
-                encryptedData = new EncryptionPk(pid.get(key), Encap.getC(), this.KeyEncryptionKey, this.Tau, sid);
+                EncryptionPk encryptedData = new EncryptionPk(pid.get(key), Encap.getC(), this.KeyEncryptionKey, Tau, sid);
                 responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),id);
             }
             else {

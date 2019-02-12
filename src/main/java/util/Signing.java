@@ -1,10 +1,6 @@
 package util;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.math.BigInteger;
 import java.security.*;
-import java.util.ArrayList;
 
 public class Signing {
 
@@ -14,7 +10,6 @@ public class Signing {
             SignatureException,
             NoSuchProviderException {
 
-        Security.addProvider(new BouncyCastleProvider());
         Signature sign = Signature.getInstance("SHA256withECDSA","BC");
         sign.initSign(pair.getPrivate());
         sign.update(Stufftosign);

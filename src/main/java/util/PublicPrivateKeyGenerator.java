@@ -1,5 +1,6 @@
 package util;
 
+import crypto.Constants;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -11,14 +12,13 @@ public class PublicPrivateKeyGenerator {
 
     private KeyPair pair;
 
-    /*private ECGenParameterSpec ecsp = new ECGenParameterSpec("secp128r1");*/
+    public PublicPrivateKeyGenerator() throws
+            NoSuchAlgorithmException,
+            NoSuchProviderException,
+            InvalidAlgorithmParameterException {
 
-    public PublicPrivateKeyGenerator() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
-
-
-        ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
         KeyPairGenerator g = KeyPairGenerator.getInstance("EC", "BC");
-        g.initialize(ecSpec, new SecureRandom());
+        g.initialize(Constants.CURVE_SPEC, new SecureRandom());
         this.pair = g.generateKeyPair();
         /*
         KeyPairGenerator kpg;

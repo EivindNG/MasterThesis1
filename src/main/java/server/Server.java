@@ -61,7 +61,7 @@ public class Server {
             }
             outputStream2.write(ekdk.getencryptionKey().getEncoded(false));
 
-            sid = sidGenerator.GenerateSid(initiator.getId(), nonce, pid, ekdk.getencryptionKey());
+            this.sid = sidGenerator.GenerateSid(initiator.getId(), nonce, pid, ekdk.getencryptionKey());
 
             initiator.checkSid(ekdk.getencryptionKey(),Signing.Sign(SkPk,outputStream2.toByteArray()));
         }

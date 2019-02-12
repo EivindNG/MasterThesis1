@@ -1,5 +1,6 @@
 package initiator;
 
+import crypto.Constants;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
@@ -10,10 +11,7 @@ import java.security.SecureRandom;
 
 public class KeyEncapsulation {
 
-    private BigInteger base = BigInteger.valueOf(11);
-    private BigInteger i;
     private ECPoint C;
-    private BigInteger modulous = BigInteger.valueOf(263);
     private ECPoint k;
 
     public ECPoint getC() {
@@ -27,10 +25,9 @@ public class KeyEncapsulation {
     public KeyEncapsulation(ECPoint ek) throws
             NoSuchAlgorithmException {
 
-        i = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modulous);
+        BigInteger i = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(Constants.CURVE_SPEC.getN());
 
-        ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
-        this.C = ecSpec.getG().multiply(i).normalize();
+        this.C = Constants.CURVE_SPEC.getG().multiply(i).normalize();
         this.k = ek.multiply(i).normalize();
 
         /*

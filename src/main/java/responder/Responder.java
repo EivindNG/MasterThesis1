@@ -13,10 +13,12 @@ import util.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.util.Base64;
 
 public class Responder {
 
@@ -25,7 +27,7 @@ public class Responder {
     private CombineData decryptedData;
     private Blind blind;
     private Server server;
-    private String SharedEncryptionKey;
+    private SecretKeySpec SharedEncryptionKey;
 
 
     public Responder(Server server) throws
@@ -89,8 +91,10 @@ public class Responder {
 
             ECPoint k = Unblinding.Unblind(blindk,blind.getUnblindKey());
 
+            String originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), k.getAffineXCoord().toBigInteger(), sid);
+            byte[] decodedKey = Base64.getDecoder().decode(originalKey);
+            this.SharedEncryptionKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
 
-            SharedEncryptionKey = KeyDerivation.KDF(BigInteger.valueOf(1), k.getAffineXCoord().toBigInteger(), sid);
             String tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k.getAffineXCoord().toBigInteger(), sid);
 
             ValidateKey(tauR);
@@ -103,7 +107,7 @@ public class Responder {
 
         }
         else {
-            SharedEncryptionKey = ""; /*Legge inn slik at det er mulig med flere Encryption keys. En for hver sid, lage en hashmap med keys og corresponding sid.*/
+            SharedEncryptionKey = null; /*Legge inn slik at det er mulig med flere Encryption keys. En for hver sid, lage en hashmap med keys og corresponding sid.*/
             throw new IllegalArgumentException("Something bad happened");
         }
     }

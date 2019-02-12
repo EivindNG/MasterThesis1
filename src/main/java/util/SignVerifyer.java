@@ -1,7 +1,5 @@
 package util;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
 import java.security.*;
 
 public class SignVerifyer {
@@ -12,7 +10,6 @@ public class SignVerifyer {
             SignatureException,
             NoSuchProviderException {
 
-        Security.addProvider(new BouncyCastleProvider());
         Signature sign = Signature.getInstance("SHA256withECDSA","BC");
         sign.initVerify(publicKey);
         sign.update(data);

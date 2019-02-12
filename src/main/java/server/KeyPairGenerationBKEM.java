@@ -1,5 +1,6 @@
 package server;
 
+import crypto.Constants;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.ECParameterSpec;
@@ -12,25 +13,16 @@ import java.security.Security;
 
 public class KeyPairGenerationBKEM {
 
-    private BigInteger base = BigInteger.valueOf(11);
     private ECPoint encryptionKey;
-    private BigInteger modulous = BigInteger.valueOf(263);
-    private BigInteger decryptionKey = new BigInteger(256,SecureRandom.getInstanceStrong()).mod(modulous);
+    private BigInteger decryptionKey = new BigInteger(256,SecureRandom.getInstanceStrong()).mod(Constants.CURVE_SPEC.getN());
 
     public KeyPairGenerationBKEM() throws NoSuchAlgorithmException {
 
-
-        ECParameterSpec ecSpec = ECNamedCurveTable.getParameterSpec("secp256r1");
-
-        encryptionKey = ecSpec.getG().multiply(decryptionKey).normalize();
+        encryptionKey = Constants.CURVE_SPEC.getG().multiply(decryptionKey).normalize();
 
         /*
         encryptionKey = base.modPow(decryptionKey,modulous);
         */
-    }
-
-    public BigInteger getBase() {
-        return base;
     }
 
     public BigInteger getdecryptionKey() {
