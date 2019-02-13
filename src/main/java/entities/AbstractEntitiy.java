@@ -3,7 +3,7 @@ package entities;
 import java.math.BigInteger;
 
 
-public abstract class AbstractEntitiy {
+public abstract class AbstractEntitiy  {
     protected BigInteger id;
 
     public BigInteger getId() {

@@ -14,10 +14,13 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.security.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -29,21 +32,22 @@ public class Responder extends AbstractEntitiy {
     private Blind blind;
     private Server server;
     private SecretKeySpec SharedEncryptionKey;
+    private ArrayList pidIDs;
 
 
-    public Responder(Server server) throws
+    public Responder() throws
             NoSuchAlgorithmException,
             NoSuchProviderException,
             InvalidAlgorithmParameterException {
-        this.server = server;
+
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         this.SkPk = privatepublickey.getPair();
-        this.id = IdMaker.getNextId().add(BigInteger.valueOf(100));
+        this.id = IdMaker.getNextId();
 
         PublicKeyList.getKeyList().put(this,SkPk.getPublic());
     }
 
-    public void DecryptData(EncryptionPk encryptedData, byte[] sign, Initiator initiator) throws
+    public void DecryptData(EncryptionPk encryptedData, byte[] sign, Initiator initiator, Server server) throws
             NoSuchAlgorithmException,
             InvalidKeyException,
             SignatureException,
@@ -55,8 +59,14 @@ public class Responder extends AbstractEntitiy {
             InvalidAlgorithmParameterException, NoSuchProviderException {
         if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiator),encryptedData.getCiphertext())){
             decryptedData = DecryptionSk.Decrypt(encryptedData,SkPk.getPrivate());
+            this.server = server;
 
             System.out.println("Great success, STAGE 2");
+
+            ByteArrayInputStream i = new ByteArrayInputStream(decryptedData.getPidIDs());
+            ObjectInputStream inputStream = new ObjectInputStream(i);
+            this.pidIDs = (ArrayList) inputStream.readObject();
+
 
             BlindAndSign(Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getC()),
                     decryptedData.getSid(),Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getKEK()));
@@ -68,7 +78,8 @@ public class Responder extends AbstractEntitiy {
             NoSuchAlgorithmException,
             IOException,
             SignatureException,
-            InvalidKeyException, NoSuchProviderException {
+            InvalidKeyException,
+            NoSuchProviderException {
 
         blind = new Blind(C);
 
@@ -110,6 +121,7 @@ public class Responder extends AbstractEntitiy {
             System.out.println("Responder key: " + SharedEncryptionKey.getAlgorithm()+" "+
                     SharedEncryptionKey.getEncoded().length+"bytes "+
                     Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
+
 
         }
         else {

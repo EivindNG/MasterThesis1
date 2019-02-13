@@ -1,5 +1,6 @@
 package crypto;
 
+import entities.AbstractEntitiy;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.math.ec.ECPoint;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class EncryptionPk {
@@ -27,7 +30,7 @@ public class EncryptionPk {
         return ciphertext;
     }
 
-    public EncryptionPk(PublicKey pubkey, ECPoint C, ECPoint KEK, byte[] tau, byte[] sid) throws
+    public EncryptionPk(PublicKey pubkey, ECPoint C, ECPoint KEK, byte[] tau, byte[] sid, ArrayList pidIDs) throws
             IOException,
             NoSuchPaddingException,
             NoSuchAlgorithmException,
@@ -35,9 +38,9 @@ public class EncryptionPk {
             BadPaddingException,
             IllegalBlockSizeException, InvalidAlgorithmParameterException, NoSuchProviderException {
 
-        CombineData data = new CombineData(C,KEK,tau,sid);
+        CombineData data = new CombineData(C,KEK,tau,sid,pidIDs);
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ObjectOutputStream objectStream = new ObjectOutputStream(outputStream);
         objectStream.writeObject(data);
 

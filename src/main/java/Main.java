@@ -29,15 +29,14 @@ public class Main {
 
         ArrayList<Responder> responderList= new ArrayList<Responder>();
 
-        for(int i=0; i < 10; i++){
+        for(int i=0; i < 2; i++){
 
-            Responder test= new Responder(test2);
-            responderList.add(test);
+            responderList.add(new Responder());
         }
 
+        Initiator test1 = new Initiator();
 
-        Initiator test1 = new Initiator(test2,responderList);
-
+        test1.startServer();
     }
 }
 

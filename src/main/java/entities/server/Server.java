@@ -22,7 +22,6 @@ public class Server extends AbstractEntitiy {
     private byte[] sid;
     private HashMap<AbstractEntitiy, PublicKey> pid;
 
-
     public Server() throws
 
             NoSuchAlgorithmException,
@@ -31,7 +30,7 @@ public class Server extends AbstractEntitiy {
 
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         this.SkPk = privatepublickey.getPair();
-        this.id = IdMaker.getNextId().add(BigInteger.valueOf(50));
+        this.id = IdMaker.getNextId();
 
         PublicKeyList.getKeyList().put(this,SkPk.getPublic());
     }

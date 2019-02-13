@@ -29,9 +29,10 @@ public class Initiator extends AbstractEntitiy {
     private SecretKeySpec SharedEncryptionKey;
     private byte[] sid;
     private Server server;
-    private ArrayList<Responder> responder;
+    private ArrayList pidIDs = new ArrayList();
 
-    public Initiator(Server server, ArrayList<Responder> responder) throws
+
+    public Initiator() throws
             NoSuchAlgorithmException,
             IOException,
             SignatureException,
@@ -42,14 +43,13 @@ public class Initiator extends AbstractEntitiy {
             ClassNotFoundException,
             InvalidAlgorithmParameterException,
             NoSuchProviderException {
-        this.server = server;
-        this.responder = responder;
+
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
         this.id = IdMaker.getNextId();
 
         PublicKeyList.getKeyList().put(this, SkPk.getPublic());
-        startServer();
+
     }
 
     public void startServer() throws
@@ -67,6 +67,18 @@ public class Initiator extends AbstractEntitiy {
         this.nonce = Nonce.Nonce();
         this.pid = PublicKeyList.getKeyList();
         ByteArrayOutputStream outputStream = stream();
+
+        for (AbstractEntitiy entity: pid.keySet()) {
+
+            this.pidIDs.add(entity.getId());
+        }
+
+        for (AbstractEntitiy  entity: pid.keySet()){
+
+            if (entity instanceof Server) {
+                this.server = (Server) entity;
+            }
+        }
 
         server.submitNonce(nonce, this.pid, Signing.Sign(SkPk, outputStream.toByteArray()), this);
     }
@@ -133,8 +145,8 @@ public class Initiator extends AbstractEntitiy {
 
             if (entity instanceof Responder){
                 Responder responder = (Responder) entity;
-                EncryptionPk encryptedData = new EncryptionPk(pid.get(responder), Encap.getC(), this.KeyEncryptionKey, Tau, sid);
-                responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),this);
+                EncryptionPk encryptedData = new EncryptionPk(pid.get(responder), Encap.getC(), this.KeyEncryptionKey, Tau, sid, pidIDs);
+                responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),this, server);
             }
             else {
                 continue;
