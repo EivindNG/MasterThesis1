@@ -1,4 +1,4 @@
-package responder;
+package entities.responder;
 
 import org.bouncycastle.math.ec.ECPoint;
 

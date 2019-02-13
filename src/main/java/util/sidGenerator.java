@@ -1,5 +1,6 @@
 package util;
 
+import entities.AbstractEntitiy;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.ByteArrayOutputStream;
@@ -14,15 +15,15 @@ import static java.security.MessageDigest.*;
 
 public class sidGenerator {
 
-    public static byte[] GenerateSid(BigInteger id, BigInteger Nonce, HashMap<BigInteger, PublicKey> pid, ECPoint KeyEncryptionKey) throws
+    public static byte[] GenerateSid(BigInteger id, BigInteger Nonce, HashMap<AbstractEntitiy, PublicKey> pid, ECPoint KeyEncryptionKey) throws
             NoSuchAlgorithmException,
             IOException {
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
         outputStream.write(id.toByteArray());
         outputStream.write(Nonce.toByteArray());
-        for (BigInteger key : pid.keySet()) {
-            outputStream.write(key.toByteArray());
+        for (AbstractEntitiy entity : pid.keySet()) {
+            outputStream.write(entity.getId().toByteArray());
         }
         outputStream.write(KeyEncryptionKey.getEncoded(false));
 

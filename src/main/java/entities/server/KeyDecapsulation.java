@@ -1,4 +1,4 @@
-package server;
+package entities.server;
 
 import org.bouncycastle.math.ec.ECPoint;
 

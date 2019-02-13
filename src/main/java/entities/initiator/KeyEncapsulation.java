@@ -1,8 +1,6 @@
-package initiator;
+package entities.initiator;
 
 import crypto.Constants;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.math.BigInteger;

@@ -1,40 +1,37 @@
-package initiator;
+package entities.initiator;
 
 import crypto.EncryptionPk;
 import crypto.KeyDerivation;
+import entities.AbstractEntitiy;
 import org.bouncycastle.math.ec.ECPoint;
-import responder.Responder;
-import server.Server;
+import entities.responder.Responder;
+import entities.server.Server;
 import util.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 
-public class Initiator {
+public class Initiator extends AbstractEntitiy {
 
-    private BigInteger id;
+
     private KeyPair SkPk;
     private BigInteger nonce;
-    private HashMap<BigInteger, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
+    private HashMap<AbstractEntitiy, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
     private ECPoint KeyEncryptionKey;
     private SecretKeySpec SharedEncryptionKey;
     private byte[] sid;
     private Server server;
-    private Responder responder;
+    private ArrayList<Responder> responder;
 
-    public BigInteger getId() {
-        return id;
-    }
-
-    public Initiator(Server server, Responder responder) throws
+    public Initiator(Server server, ArrayList<Responder> responder) throws
             NoSuchAlgorithmException,
             IOException,
             SignatureException,
@@ -49,8 +46,9 @@ public class Initiator {
         this.responder = responder;
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
         SkPk = privatepublickey.getPair();
-        id = IdMaker.getNextId();
-        PublicKeyList.getKeyList().put(id, SkPk.getPublic());
+        this.id = IdMaker.getNextId();
+
+        PublicKeyList.getKeyList().put(this, SkPk.getPublic());
         startServer();
     }
 
@@ -59,23 +57,30 @@ public class Initiator {
             NoSuchAlgorithmException,
             SignatureException,
             InvalidKeyException,
+            NoSuchProviderException,
+            ClassNotFoundException,
             NoSuchPaddingException,
             BadPaddingException,
-            IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
-        nonce = Nonce.Nonce();
-        pid = PublicKeyList.getKeyList();
+            InvalidAlgorithmParameterException,
+            IllegalBlockSizeException {
 
+        this.nonce = Nonce.Nonce();
+        this.pid = PublicKeyList.getKeyList();
+        ByteArrayOutputStream outputStream = stream();
+
+        server.submitNonce(nonce, this.pid, Signing.Sign(SkPk, outputStream.toByteArray()), this);
+    }
+
+    public ByteArrayOutputStream stream() throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         outputStream.write(nonce.toByteArray());
-        for (BigInteger key : pid.keySet()) {
-            outputStream.write(key.toByteArray());
+        for (AbstractEntitiy entity: pid.keySet()) {
+            outputStream.write(entity.getId().toByteArray());
         }
-
-        server.submitNonce(nonce, pid, Signing.Sign(SkPk, outputStream.toByteArray()), this);
-
+        return outputStream;
     }
-    public void checkSid(ECPoint KeyEncryptionKey, byte[] sign) throws
+
+    public void checkSid(ECPoint KeyEncryptionKey, byte[] sign, Server server) throws
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
@@ -85,15 +90,12 @@ public class Initiator {
             IllegalBlockSizeException,
             ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
 
-        ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream( );
-        outputStream2.write(nonce.toByteArray());
-        for (BigInteger key : pid.keySet()) {
-            outputStream2.write(key.toByteArray());
-        }
+        ByteArrayOutputStream outputStream2 = stream();
+
         outputStream2.write(KeyEncryptionKey.getEncoded(false));
         byte data[] = outputStream2.toByteArray( );
 
-        if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server.getId()), data)){
+        if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server), data)){
             this.KeyEncryptionKey = KeyEncryptionKey;
             this.sid = sidGenerator.GenerateSid(id, nonce, pid, KeyEncryptionKey);
             System.out.println("Great succsess, STAGE 1");
@@ -127,17 +129,16 @@ public class Initiator {
                 SharedEncryptionKey.getEncoded().length+"bytes "+
                 Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
 
-        for (BigInteger key : pid.keySet()){
-            if ((key.compareTo(BigInteger.valueOf(100)))== 1){
+        for (AbstractEntitiy  entity: pid.keySet()){
 
-
-                EncryptionPk encryptedData = new EncryptionPk(pid.get(key), Encap.getC(), this.KeyEncryptionKey, Tau, sid);
-                responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),id);
+            if (entity instanceof Responder){
+                Responder responder = (Responder) entity;
+                EncryptionPk encryptedData = new EncryptionPk(pid.get(responder), Encap.getC(), this.KeyEncryptionKey, Tau, sid);
+                responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),this);
             }
             else {
                 continue;
             }
         }
-
     }
 }

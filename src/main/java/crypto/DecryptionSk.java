@@ -1,8 +1,6 @@
 package crypto;
 
-import initiator.Initiator;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import util.CombineData;
 
 import javax.crypto.*;

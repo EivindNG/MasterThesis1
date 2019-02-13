@@ -1,4 +1,4 @@
-package responder;
+package entities.responder;
 
 import crypto.Constants;
 import org.bouncycastle.math.ec.ECPoint;

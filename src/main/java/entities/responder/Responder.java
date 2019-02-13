@@ -1,14 +1,13 @@
-package responder;
+package entities.responder;
 
-import com.sun.tools.javac.code.Attribute;
 import crypto.Constants;
 import crypto.DecryptionSk;
 import crypto.EncryptionPk;
 import crypto.KeyDerivation;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECParameterSpec;
+import entities.AbstractEntitiy;
+import entities.initiator.Initiator;
 import org.bouncycastle.math.ec.ECPoint;
-import server.Server;
+import entities.server.Server;
 import util.*;
 
 import javax.crypto.BadPaddingException;
@@ -22,9 +21,9 @@ import java.security.*;
 import java.util.Arrays;
 import java.util.Base64;
 
-public class Responder {
+public class Responder extends AbstractEntitiy {
 
-    private BigInteger id;
+
     private KeyPair SkPk;
     private CombineData decryptedData;
     private Blind blind;
@@ -38,12 +37,13 @@ public class Responder {
             InvalidAlgorithmParameterException {
         this.server = server;
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
-        SkPk = privatepublickey.getPair();
-        id = IdMaker.getNextId().add(BigInteger.valueOf(100));
-        PublicKeyList.getKeyList().put(id,SkPk.getPublic());
+        this.SkPk = privatepublickey.getPair();
+        this.id = IdMaker.getNextId().add(BigInteger.valueOf(100));
+
+        PublicKeyList.getKeyList().put(this,SkPk.getPublic());
     }
 
-    public void DecryptData(EncryptionPk encryptedData, byte[] sign, BigInteger initiatorID) throws
+    public void DecryptData(EncryptionPk encryptedData, byte[] sign, Initiator initiator) throws
             NoSuchAlgorithmException,
             InvalidKeyException,
             SignatureException,
@@ -53,12 +53,13 @@ public class Responder {
             NoSuchPaddingException,
             IOException,
             InvalidAlgorithmParameterException, NoSuchProviderException {
-        if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiatorID),encryptedData.getCiphertext())){
+        if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiator),encryptedData.getCiphertext())){
             decryptedData = DecryptionSk.Decrypt(encryptedData,SkPk.getPrivate());
 
             System.out.println("Great success, STAGE 2");
 
-            BlindAndSign(Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getC()),decryptedData.getSid(),Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getKEK()));
+            BlindAndSign(Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getC()),
+                    decryptedData.getSid(),Constants.CURVE_SPEC.getCurve().decodePoint(decryptedData.getKEK()));
 
         }
     }
@@ -89,7 +90,7 @@ public class Responder {
         outputStream2.write(sid);
         outputStream2.write(blindk.getEncoded(false));
 
-        if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server.getId()),outputStream2.toByteArray())){
+        if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server),outputStream2.toByteArray())){
 
             ECPoint k = Unblinding.Unblind(blindk,blind.getUnblindKey());
 
@@ -115,9 +116,6 @@ public class Responder {
             SharedEncryptionKey = null; /*Legge inn slik at det er mulig med flere Encryption keys. En for hver sid, lage en hashmap med keys og corresponding sid.*/
             throw new IllegalArgumentException("Something bad happened");
         }
-    }
-    public BigInteger getId() {
-        return id;
     }
 }
 

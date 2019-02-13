@@ -1,8 +1,9 @@
-package server;
+package entities.server;
 
-import initiator.Initiator;
+import entities.AbstractEntitiy;
+import entities.initiator.Initiator;
+import entities.responder.Responder;
 import org.bouncycastle.math.ec.ECPoint;
-import responder.Responder;
 import util.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -13,61 +14,69 @@ import java.math.BigInteger;
 import java.security.*;
 import java.util.HashMap;
 
-public class Server {
+public class Server extends AbstractEntitiy {
 
-    private BigInteger id;
+
     private KeyPair SkPk;
     private KeyPairGenerationBKEM ekdk;
     private byte[] sid;
-    private HashMap pid;
+    private HashMap<AbstractEntitiy, PublicKey> pid;
 
 
     public Server() throws
 
-            NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException {
+            NoSuchAlgorithmException,
+            NoSuchProviderException,
+            InvalidAlgorithmParameterException {
 
         PublicPrivateKeyGenerator privatepublickey = new PublicPrivateKeyGenerator();
-        SkPk = privatepublickey.getPair();
-        id = IdMaker.getNextId().add(BigInteger.valueOf(50));
-        PublicKeyList.getKeyList().put(id,SkPk.getPublic());
+        this.SkPk = privatepublickey.getPair();
+        this.id = IdMaker.getNextId().add(BigInteger.valueOf(50));
+
+        PublicKeyList.getKeyList().put(this,SkPk.getPublic());
     }
 
-    public void submitNonce(BigInteger nonce, HashMap<BigInteger, PublicKey> pid, byte[] signing, Initiator initiator) throws
+    public void submitNonce(BigInteger nonce, HashMap<AbstractEntitiy, PublicKey> pid, byte[] signing, Initiator initiator) throws
 
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
             SignatureException,
-            NoSuchPaddingException,
-            BadPaddingException,
+            NoSuchProviderException,
             IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
+            ClassNotFoundException,
+            BadPaddingException,
+            InvalidAlgorithmParameterException,
+            NoSuchPaddingException {
 
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-        outputStream.write(nonce.toByteArray());
-        for (BigInteger key : pid.keySet()) {
-            outputStream.write(key.toByteArray());
-        }
+        this.pid = pid;
+        ByteArrayOutputStream outputStream = stream(nonce);
 
-        if (SignVerifyer.Verify(signing, PublicKeyList.getKeyList().get(initiator.getId()), outputStream.toByteArray( ))){
+        if (SignVerifyer.Verify(signing, PublicKeyList.getKeyList().get(initiator), outputStream.toByteArray( ))){
 
             this.pid = pid;
             ekdk = new KeyPairGenerationBKEM();
 
-            ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream( );
-            outputStream2.write(nonce.toByteArray());
-            for (BigInteger key : pid.keySet()) {
-                outputStream2.write(key.toByteArray());
-            }
+            ByteArrayOutputStream outputStream2 = stream(nonce);
+
             outputStream2.write(ekdk.getencryptionKey().getEncoded(false));
 
             this.sid = sidGenerator.GenerateSid(initiator.getId(), nonce, pid, ekdk.getencryptionKey());
 
-            initiator.checkSid(ekdk.getencryptionKey(),Signing.Sign(SkPk,outputStream2.toByteArray()));
+            initiator.checkSid(ekdk.getencryptionKey(),Signing.Sign(SkPk,outputStream2.toByteArray()),this);
         }
         else{
             throw new IllegalArgumentException();
         }
+    }
+
+    public ByteArrayOutputStream stream(BigInteger nonce) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        outputStream.write(nonce.toByteArray());
+        for (AbstractEntitiy entity: pid.keySet()) {
+            outputStream.write(entity.getId().toByteArray());
+        }
+        return outputStream;
     }
 
     public void Decapsulate(byte[] sid, ECPoint blindC, byte[] sign, Responder responder) throws
@@ -82,8 +91,8 @@ public class Server {
         outputStream3.write(ekdk.getencryptionKey().getEncoded(false));
         outputStream3.write(blindC.getEncoded(false));
 
-        if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(responder.getId()),outputStream3.toByteArray())){
-            if (pid.containsKey(responder.getId())){
+        if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(responder),outputStream3.toByteArray())){
+            if (pid.containsKey(responder)){
                 ECPoint blindk = KeyDecapsulation.Decapsulate(blindC,ekdk.getdecryptionKey());
 
                 ByteArrayOutputStream outputStream4 = new ByteArrayOutputStream();
@@ -100,9 +109,4 @@ public class Server {
             throw new IllegalArgumentException();
         }
     }
-
-    public BigInteger getId() {
-        return id;
-    }
-
 }
