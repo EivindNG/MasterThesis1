@@ -7,6 +7,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.*;
+import java.util.ArrayList;
 
 public class Main {
 
@@ -26,6 +27,15 @@ public class Main {
 
         Server test2 = new Server();
         Responder test3 = new Responder(test2);
+        ArrayList<Responder> responderList= new ArrayList<Responder>();
+
+        for(int i=0; i < 2; i++){
+
+            Responder test= new Responder(test2);
+            responderList.add(test);
+        }
+        System.out.println(responderList);
+
         Initiator test1 = new Initiator(test2,test3);
 
         /*

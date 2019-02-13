@@ -1,8 +1,5 @@
 package util;
 
-import crypto.Constants;
-import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.spec.ECParameterSpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.Serializable;
@@ -11,8 +8,8 @@ public class CombineData implements Serializable {
 
     byte[] C;
     byte[] KEK;
-    String tau;
-    String sid;
+    byte[] tau;
+    byte[] sid;
 
     public byte[] getC() {
         return C;
@@ -22,15 +19,15 @@ public class CombineData implements Serializable {
         return KEK;
     }
 
-    public String getTau() {
+    public byte[] getTau() {
         return tau;
     }
 
-    public String getSid() {
+    public byte[] getSid() {
         return sid;
     }
 
-    public CombineData(ECPoint C, ECPoint KEK, String tau, String sid){
+    public CombineData(ECPoint C, ECPoint KEK, byte[] tau, byte[] sid){
         this.C = C.getEncoded(false);
         this.KEK = KEK.getEncoded(false);
         this.tau = tau;

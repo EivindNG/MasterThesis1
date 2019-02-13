@@ -26,7 +26,7 @@ public class Initiator {
     private HashMap<BigInteger, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
     private ECPoint KeyEncryptionKey;
     private SecretKeySpec SharedEncryptionKey;
-    private String sid;
+    private byte[] sid;
     private Server server;
     private Responder responder;
 
@@ -116,13 +116,16 @@ public class Initiator {
 
 
         KeyEncapsulation Encap = new KeyEncapsulation(KeyEncryptionKey);
-        String originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK().getAffineXCoord().toBigInteger(), this.sid);
-        String Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK().getAffineXCoord().toBigInteger(),this.sid);
+        byte[] originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK().getAffineXCoord().toBigInteger(), this.sid);
+        byte[] Tau = KeyDerivation.KDF(BigInteger.valueOf(2), Encap.getK().getAffineXCoord().toBigInteger(),this.sid);
 
-
+        /*
         byte[] decodedKey = Base64.getDecoder().decode(originalKey);
-        this.SharedEncryptionKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-
+        */
+        this.SharedEncryptionKey = new SecretKeySpec(originalKey, 0, originalKey.length, "AES");
+        System.out.println("Initiator key: " + SharedEncryptionKey.getAlgorithm()+" "+
+                SharedEncryptionKey.getEncoded().length+"bytes "+
+                Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
 
         for (BigInteger key : pid.keySet()){
             if ((key.compareTo(BigInteger.valueOf(100)))== 1){

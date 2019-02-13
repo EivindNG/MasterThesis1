@@ -1,5 +1,6 @@
 package responder;
 
+import com.sun.tools.javac.code.Attribute;
 import crypto.Constants;
 import crypto.DecryptionSk;
 import crypto.EncryptionPk;
@@ -18,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.util.Arrays;
 import java.util.Base64;
 
 public class Responder {
@@ -61,7 +63,7 @@ public class Responder {
         }
     }
 
-    public void BlindAndSign(ECPoint C, String sid, ECPoint ek) throws
+    public void BlindAndSign(ECPoint C, byte[] sid, ECPoint ek) throws
             NoSuchAlgorithmException,
             IOException,
             SignatureException,
@@ -70,40 +72,43 @@ public class Responder {
         blind = new Blind(C);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(sid.getBytes());
+        outputStream.write(sid);
         outputStream.write(ek.getEncoded(false));
         outputStream.write(blind.getBlindC().getEncoded(false));
 
         server.Decapsulate(sid, blind.getBlindC(), Signing.Sign(SkPk,outputStream.toByteArray()),this);
     }
 
-    public void UnblindAndKDF(String sid, ECPoint blindk, byte[] sign, Server server) throws
+    public void UnblindAndKDF(byte[] sid, ECPoint blindk, byte[] sign, Server server) throws
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
             SignatureException, NoSuchProviderException {
 
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
-        outputStream2.write(sid.getBytes());
+        outputStream2.write(sid);
         outputStream2.write(blindk.getEncoded(false));
 
         if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server.getId()),outputStream2.toByteArray())){
 
             ECPoint k = Unblinding.Unblind(blindk,blind.getUnblindKey());
 
-            String originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), k.getAffineXCoord().toBigInteger(), sid);
-            byte[] decodedKey = Base64.getDecoder().decode(originalKey);
-            this.SharedEncryptionKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+            byte[] originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), k.getAffineXCoord().toBigInteger(), sid);
 
-            String tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k.getAffineXCoord().toBigInteger(), sid);
+            this.SharedEncryptionKey = new SecretKeySpec(originalKey, 0, originalKey.length, "AES");
+
+            byte[] tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k.getAffineXCoord().toBigInteger(), sid);
 
             ValidateKey(tauR);
         }
     }
-    public void ValidateKey(String tauR){
+    public void ValidateKey(byte[] tauR){
 
-        if (tauR.equals(decryptedData.getTau())){
-            System.out.println("Great success, STAGE 3. Key is shared");
+        if (Arrays.equals(decryptedData.getTau(),tauR)){
+            System.out.println("Great success, STAGE 3. Key is shared" + "\n");
+            System.out.println("Responder key: " + SharedEncryptionKey.getAlgorithm()+" "+
+                    SharedEncryptionKey.getEncoded().length+"bytes "+
+                    Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
 
         }
         else {

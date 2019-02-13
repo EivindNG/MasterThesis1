@@ -18,7 +18,7 @@ public class Server {
     private BigInteger id;
     private KeyPair SkPk;
     private KeyPairGenerationBKEM ekdk;
-    private String sid;
+    private byte[] sid;
     private HashMap pid;
 
 
@@ -70,7 +70,7 @@ public class Server {
         }
     }
 
-    public void Decapsulate(String sid, ECPoint blindC, byte[] sign, Responder responder) throws
+    public void Decapsulate(byte[] sid, ECPoint blindC, byte[] sign, Responder responder) throws
 
             IOException,
             NoSuchAlgorithmException,
@@ -78,7 +78,7 @@ public class Server {
             SignatureException, NoSuchProviderException {
 
         ByteArrayOutputStream outputStream3 = new ByteArrayOutputStream();
-        outputStream3.write(sid.getBytes());
+        outputStream3.write(sid);
         outputStream3.write(ekdk.getencryptionKey().getEncoded(false));
         outputStream3.write(blindC.getEncoded(false));
 
@@ -87,7 +87,7 @@ public class Server {
                 ECPoint blindk = KeyDecapsulation.Decapsulate(blindC,ekdk.getdecryptionKey());
 
                 ByteArrayOutputStream outputStream4 = new ByteArrayOutputStream();
-                outputStream4.write(sid.getBytes());
+                outputStream4.write(sid);
                 outputStream4.write(blindk.getEncoded(false));
 
                 responder.UnblindAndKDF(sid, blindk, Signing.Sign(SkPk,outputStream4.toByteArray()),this);

@@ -1,6 +1,5 @@
 package util;
 
-import crypto.Hashing;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.ByteArrayOutputStream;
@@ -15,7 +14,7 @@ import static java.security.MessageDigest.*;
 
 public class sidGenerator {
 
-    public static String GenerateSid(BigInteger id, BigInteger Nonce, HashMap<BigInteger, PublicKey> pid, ECPoint KeyEncryptionKey) throws
+    public static byte[] GenerateSid(BigInteger id, BigInteger Nonce, HashMap<BigInteger, PublicKey> pid, ECPoint KeyEncryptionKey) throws
             NoSuchAlgorithmException,
             IOException {
 
@@ -33,9 +32,7 @@ public class sidGenerator {
         MessageDigest md = getInstance("SHA-256");
         byte[] messageDigest = md.digest(AltSammen);
 
-        String hashtext = Hashing.hash(AltSammen,messageDigest);
-
-        return hashtext;
+        return messageDigest;
 
     }
 }

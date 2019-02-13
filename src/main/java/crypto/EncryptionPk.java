@@ -27,7 +27,7 @@ public class EncryptionPk {
         return ciphertext;
     }
 
-    public EncryptionPk(PublicKey pubkey, ECPoint C, ECPoint KEK, String tau, String sid) throws
+    public EncryptionPk(PublicKey pubkey, ECPoint C, ECPoint KEK, byte[] tau, byte[] sid) throws
             IOException,
             NoSuchPaddingException,
             NoSuchAlgorithmException,
