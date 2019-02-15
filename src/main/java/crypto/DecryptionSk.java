@@ -1,6 +1,7 @@
 package crypto;
 
 import org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher;
+import util.AESandIV;
 import util.CombineData;
 
 import javax.crypto.*;
@@ -37,11 +38,17 @@ public class DecryptionSk {
 
         byte[] aesKeyBytes = cipher.doFinal(data.getCiphertextKey());
 
-        SecretKey aesKey = new SecretKeySpec(aesKeyBytes, 0, aesKeyBytes.length, "AES");
+        ByteArrayInputStream innputStream2 = new ByteArrayInputStream(aesKeyBytes);
+        ObjectInputStream objectInputStream2 = new ObjectInputStream(innputStream2);
+
+        AESandIV aesAndiv = (AESandIV) objectInputStream2.readObject();
+
+
+        SecretKey aesKey = new SecretKeySpec(aesAndiv.getAesKey(), 0, aesAndiv.getAesKey().length, "AES");
 
         Cipher decryptCipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 
-        IvParameterSpec iv = new IvParameterSpec("encryptionIntVec".getBytes("UTF-8")); /*Finne paa en annen maate aa  lage IV*/
+        IvParameterSpec iv = new IvParameterSpec(aesAndiv.getIv());
 
         decryptCipher.init(Cipher.DECRYPT_MODE, aesKey, iv);
         byte[] combinedDecryptedData = decryptCipher.doFinal(data.getCiphertext());

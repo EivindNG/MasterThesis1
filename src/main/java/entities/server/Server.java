@@ -12,6 +12,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 
 public class Server extends AbstractEntitiy {
@@ -46,7 +47,7 @@ public class Server extends AbstractEntitiy {
             ClassNotFoundException,
             BadPaddingException,
             InvalidAlgorithmParameterException,
-            NoSuchPaddingException {
+            NoSuchPaddingException, InvalidKeySpecException {
 
         this.pid = pid;
         ByteArrayOutputStream outputStream = stream(nonce);
@@ -83,7 +84,7 @@ public class Server extends AbstractEntitiy {
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
-            SignatureException, NoSuchProviderException {
+            SignatureException, NoSuchProviderException, InvalidKeySpecException {
 
         ByteArrayOutputStream outputStream3 = new ByteArrayOutputStream();
         outputStream3.write(sid);

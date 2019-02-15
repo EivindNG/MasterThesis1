@@ -8,14 +8,19 @@ import entities.responder.Responder;
 import entities.server.Server;
 import util.*;
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 
@@ -27,6 +32,7 @@ public class Initiator extends AbstractEntitiy {
     private HashMap<AbstractEntitiy, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
     private ECPoint KeyEncryptionKey;
     private SecretKeySpec SharedEncryptionKey;
+    private IvParameterSpec iv;
     private byte[] sid;
     private Server server;
     private ArrayList pidIDs = new ArrayList();
@@ -62,7 +68,7 @@ public class Initiator extends AbstractEntitiy {
             NoSuchPaddingException,
             BadPaddingException,
             InvalidAlgorithmParameterException,
-            IllegalBlockSizeException {
+            IllegalBlockSizeException, InvalidKeySpecException {
 
         this.nonce = Nonce.Nonce();
         this.pid = PublicKeyList.getKeyList();
@@ -100,7 +106,7 @@ public class Initiator extends AbstractEntitiy {
             NoSuchPaddingException,
             BadPaddingException,
             IllegalBlockSizeException,
-            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException {
+            ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
 
         ByteArrayOutputStream outputStream2 = stream();
 
@@ -117,6 +123,15 @@ public class Initiator extends AbstractEntitiy {
             throw new IllegalArgumentException();
         }
     }
+
+    public SecretKeySpec getSharedEncryptionKey() {
+        return SharedEncryptionKey;
+    }
+
+    public IvParameterSpec getIv() {
+        return iv;
+    }
+
     public void EncapAndCreateKey() throws
             NoSuchAlgorithmException,
             IOException,
@@ -126,7 +141,7 @@ public class Initiator extends AbstractEntitiy {
             NoSuchPaddingException,
             SignatureException,
             ClassNotFoundException,
-            InvalidAlgorithmParameterException, NoSuchProviderException {
+            InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
 
 
         KeyEncapsulation Encap = new KeyEncapsulation(KeyEncryptionKey);
@@ -136,10 +151,19 @@ public class Initiator extends AbstractEntitiy {
         /*
         byte[] decodedKey = Base64.getDecoder().decode(originalKey);
         */
-        this.SharedEncryptionKey = new SecretKeySpec(originalKey, 0, originalKey.length, "AES");
+        byte[] SEK = Arrays.copyOfRange(originalKey, 0, 32);
+        byte[] IV = Arrays.copyOfRange(originalKey, 32, 48);
+
+        this.SharedEncryptionKey = new SecretKeySpec(SEK, 0, SEK.length, "AES");
+        this.iv = new IvParameterSpec(IV);
+        /*
+        this.iv = new IvParameterSpec(IV);
+        */
+
         System.out.println("Initiator key: " + SharedEncryptionKey.getAlgorithm()+" "+
-                SharedEncryptionKey.getEncoded().length+"bytes "+
-                Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
+                SharedEncryptionKey.getEncoded().length + "bytes "+
+                Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded())+iv);
+
 
         for (AbstractEntitiy  entity: pid.keySet()){
 

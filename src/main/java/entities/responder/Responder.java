@@ -13,6 +13,7 @@ import util.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -32,6 +34,7 @@ public class Responder extends AbstractEntitiy {
     private Blind blind;
     private Server server;
     private SecretKeySpec SharedEncryptionKey;
+    private IvParameterSpec iv;
     private ArrayList pidIDs;
 
 
@@ -47,6 +50,10 @@ public class Responder extends AbstractEntitiy {
         PublicKeyList.getKeyList().put(this,SkPk.getPublic());
     }
 
+    public SecretKeySpec getSharedEncryptionKey() {
+        return SharedEncryptionKey;
+    }
+
     public void DecryptData(EncryptionPk encryptedData, byte[] sign, Initiator initiator, Server server) throws
             NoSuchAlgorithmException,
             InvalidKeyException,
@@ -56,7 +63,7 @@ public class Responder extends AbstractEntitiy {
             BadPaddingException,
             NoSuchPaddingException,
             IOException,
-            InvalidAlgorithmParameterException, NoSuchProviderException {
+            InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
         if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiator),encryptedData.getCiphertext())){
             decryptedData = DecryptionSk.Decrypt(encryptedData,SkPk.getPrivate());
             this.server = server;
@@ -79,7 +86,7 @@ public class Responder extends AbstractEntitiy {
             IOException,
             SignatureException,
             InvalidKeyException,
-            NoSuchProviderException {
+            NoSuchProviderException, InvalidKeySpecException {
 
         blind = new Blind(C);
 
@@ -91,11 +98,15 @@ public class Responder extends AbstractEntitiy {
         server.Decapsulate(sid, blind.getBlindC(), Signing.Sign(SkPk,outputStream.toByteArray()),this);
     }
 
+    public IvParameterSpec getIv() {
+        return iv;
+    }
+
     public void UnblindAndKDF(byte[] sid, ECPoint blindk, byte[] sign, Server server) throws
             IOException,
             NoSuchAlgorithmException,
             InvalidKeyException,
-            SignatureException, NoSuchProviderException {
+            SignatureException, NoSuchProviderException, InvalidKeySpecException {
 
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
         outputStream2.write(sid);
@@ -106,10 +117,14 @@ public class Responder extends AbstractEntitiy {
             ECPoint k = Unblinding.Unblind(blindk,blind.getUnblindKey());
 
             byte[] originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), k.getAffineXCoord().toBigInteger(), sid);
-
-            this.SharedEncryptionKey = new SecretKeySpec(originalKey, 0, originalKey.length, "AES");
-
             byte[] tauR = KeyDerivation.KDF(BigInteger.valueOf(2), k.getAffineXCoord().toBigInteger(), sid);
+
+            byte[] SEK = Arrays.copyOfRange(originalKey, 0, 32);
+            byte[] IV = Arrays.copyOfRange(originalKey, 32, 48);
+
+            this.SharedEncryptionKey = new SecretKeySpec(SEK, 0, SEK.length, "AES");
+            this.iv = new IvParameterSpec(IV);
+
 
             ValidateKey(tauR);
         }
