@@ -29,7 +29,7 @@ public class Initiator extends AbstractEntitiy {
 
     private KeyPair SkPk;
     private BigInteger nonce;
-    private HashMap<AbstractEntitiy, PublicKey> pid; /*Lage Idmaker om til en class. Rather use object class as id? or add object class insted of public key and then later just use object.getPublic*/
+    private HashMap<AbstractEntitiy, PublicKey> pid;
     private ECPoint KeyEncryptionKey;
     private SecretKeySpec SharedEncryptionKey;
     private IvParameterSpec iv;
@@ -162,7 +162,7 @@ public class Initiator extends AbstractEntitiy {
 
         System.out.println("Initiator key: " + SharedEncryptionKey.getAlgorithm()+" "+
                 SharedEncryptionKey.getEncoded().length + "bytes "+
-                Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded())+iv);
+                Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded())+iv +"\n");
 
 
         for (AbstractEntitiy  entity: pid.keySet()){
