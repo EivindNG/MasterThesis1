@@ -68,8 +68,10 @@ public class EncryptionPk {
         /*
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
         */
-        IESCipher c1 = new org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher.ECIES();
 
+        /*
+        IESCipher c1 = new org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher.ECIES();
+        */
         Cipher cipher = Cipher.getInstance("ECIES","BC");
 
         AESandIV aesAndiv = new AESandIV(iv,aesKey);

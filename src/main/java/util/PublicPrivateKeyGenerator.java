@@ -20,6 +20,7 @@ public class PublicPrivateKeyGenerator {
         KeyPairGenerator g = KeyPairGenerator.getInstance("EC", "BC");
         g.initialize(Constants.CURVE_SPEC, new SecureRandom());
         this.pair = g.generateKeyPair();
+
     }
 
     public KeyPair getPair() {

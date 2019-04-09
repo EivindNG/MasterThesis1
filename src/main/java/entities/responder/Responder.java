@@ -134,7 +134,7 @@ public class Responder extends AbstractEntitiy {
         if (Arrays.equals(decryptedData.getTau(),tauR)){
             System.out.println("Great success, STAGE 3. Key is shared" + "\n");
             System.out.println("Responder key: " + SharedEncryptionKey.getAlgorithm()+" "+
-                    SharedEncryptionKey.getEncoded().length+"bytes "+
+                    SharedEncryptionKey.getEncoded().length+"bytes " +
                     Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
 
 

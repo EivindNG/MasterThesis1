@@ -29,9 +29,9 @@ public class DecryptionSk {
         Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
         */
 
-
+        /*
         IESCipher c1 = new org.bouncycastle.jcajce.provider.asymmetric.ec.IESCipher.ECIES();
-
+        */
         Cipher cipher = Cipher.getInstance("ECIES","BC");
 
         cipher.init(Cipher.DECRYPT_MODE, privateKey);
