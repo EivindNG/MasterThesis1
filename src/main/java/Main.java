@@ -9,11 +9,14 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Main {
 
@@ -31,35 +34,50 @@ public class Main {
 
         Security.addProvider(new BouncyCastleProvider());
 
-        /*ArrayList<Long> timelist= new ArrayList();
+        List<Long> timelist= new ArrayList();
+        for(int a = 1; a < 10001; a=a*10) {
+            for (int x = 0; x < 500; x++) {
 
-        for(int x=0; x <99; x++) {
-            Date date = new Date();
-            long time = date.getTime();
-            System.out.println("Time in Milliseconds: " + time);
-*/
-            Server test2 = new Server();
+                long time = System.nanoTime();
 
-            ArrayList<Responder> responderList = new ArrayList<Responder>();
+                Server test2 = new Server();
 
-            for (int i = 0; i < 2; i++) {
+                ArrayList<Responder> responderList = new ArrayList<Responder>();
 
-                responderList.add(new Responder());
+                for (int i = 0; i < a; i++) {
+
+                    responderList.add(new Responder());
+                }
+
+                Initiator test1 = new Initiator();
+
+
+                long time2 = System.nanoTime();
+
+                timelist.add(time2 - time);
+
             }
 
-            Initiator test1 = new Initiator();
-            /*
-            Date date2 = new Date();
-            long time2 = date2.getTime();
-            System.out.println("Time in Milliseconds: " + time2);
-            timelist.add(time2-time);
+            timelist = timelist.subList(400, timelist.size());
+            double average = 0.0;
 
+            for (long element : timelist) {
+                average = average + element;
+            }
+            average = average / timelist.size();
+
+            double std = 0.0;
+
+            for (long element : timelist) {
+                std = std + Math.pow((element - average), 2);
+            }
+            std = Math.sqrt(std / timelist.size());
+
+            System.out.println(a + " " + average + " " + std);
         }
-        System.out.println(timelist);
-        */
-
+/*
         test1.startServer();
-        /*
+
         InitiatorShare shareFile = new InitiatorShare(test1.getIv(),test1.getSharedEncryptionKey(),new File("C:\\Users\\Lenovo\\Documents\\JavaFileSharingTest\\InitiatorSecret.txt"));
 
         ResponderRetriveFile decyptSharedFile = new ResponderRetriveFile(responderList.get(0).getIv(),responderList.get(0).getSharedEncryptionKey(),new File("C:\\Users\\Lenovo\\Documents\\JavaFileSharingTest\\ResponderDecryptedSharedFile.txt"), new File("C:\\Users\\Lenovo\\Documents\\JavaFileSharingTest\\SharedCloudFile.txt"));
