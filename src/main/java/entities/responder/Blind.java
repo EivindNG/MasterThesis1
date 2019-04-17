@@ -13,7 +13,7 @@ public class Blind {
     private ECPoint BlindC;
     private BigInteger UnblindKey;
     private BigInteger modolus = Constants.CURVE_SPEC.getN();
-    private BigInteger t = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(modolus);
+    private BigInteger t = new BigInteger(256,new SecureRandom()).mod(modolus);
 
     public Blind(ECPoint C) throws NoSuchAlgorithmException {
 

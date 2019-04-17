@@ -34,31 +34,33 @@ public class Main {
 
         Security.addProvider(new BouncyCastleProvider());
 
+        /*
         List<Long> timelist= new ArrayList();
         for(int a = 1; a < 10001; a=a*10) {
-            for (int x = 0; x < 500; x++) {
+            for (int x = 0; x < 300; x++) {
 
                 long time = System.nanoTime();
+*/
+        Server test2 = new Server();
 
-                Server test2 = new Server();
+        ArrayList<Responder> responderList = new ArrayList<Responder>();
 
-                ArrayList<Responder> responderList = new ArrayList<Responder>();
+        for (int i = 0; i < 2; i++) {
+            System.out.println("test");
+            responderList.add(new Responder());
+        }
 
-                for (int i = 0; i < a; i++) {
+        Initiator test1 = new Initiator();
 
-                    responderList.add(new Responder());
-                }
-
-                Initiator test1 = new Initiator();
-
-
+        test1.startServer();
+/*
                 long time2 = System.nanoTime();
 
                 timelist.add(time2 - time);
 
             }
 
-            timelist = timelist.subList(400, timelist.size());
+            timelist = timelist.subList(250, timelist.size());
             double average = 0.0;
 
             for (long element : timelist) {
@@ -74,6 +76,7 @@ public class Main {
             std = Math.sqrt(std / timelist.size());
 
             System.out.println(a + " " + average + " " + std);
+            timelist.clear();
         }
 /*
         test1.startServer();

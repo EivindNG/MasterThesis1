@@ -10,7 +10,7 @@ import java.security.SecureRandom;
 public class KeyPairGenerationBKEM {
 
     private ECPoint encryptionKey;
-    private BigInteger decryptionKey = new BigInteger(256,SecureRandom.getInstanceStrong()).mod(Constants.CURVE_SPEC.getN());
+    private BigInteger decryptionKey = new BigInteger(256,new SecureRandom()).mod(Constants.CURVE_SPEC.getN());
 
     public KeyPairGenerationBKEM() throws NoSuchAlgorithmException {
 

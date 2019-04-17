@@ -4,6 +4,8 @@
     <bytecodeTargetLevel>
       <module name="colin.boyd.MasterThesis.main" target="1.8" />
       <module name="colin.boyd.MasterThesis.test" target="1.8" />
+      <module name="MasterThesis1.main" target="1.8" />
+      <module name="MasterThesis1.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

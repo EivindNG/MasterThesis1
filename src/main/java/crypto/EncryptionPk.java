@@ -57,7 +57,7 @@ public class EncryptionPk {
         SecretKey aesKey = kgen.generateKey();
 
         byte [] ivBytes = new byte[16];
-        SecureRandom.getInstanceStrong().nextBytes(ivBytes);
+        new SecureRandom().nextBytes(ivBytes);
 
         IvParameterSpec iv = new IvParameterSpec(ivBytes);
 

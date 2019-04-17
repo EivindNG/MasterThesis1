@@ -23,7 +23,7 @@ public class KeyEncapsulation {
     public KeyEncapsulation(ECPoint ek) throws
             NoSuchAlgorithmException {
 
-        BigInteger i = new BigInteger(256, SecureRandom.getInstanceStrong()).mod(Constants.CURVE_SPEC.getN());
+        BigInteger i = new BigInteger(256, new SecureRandom()).mod(Constants.CURVE_SPEC.getN());
 
         this.C = Constants.CURVE_SPEC.getG().multiply(i).normalize();
         this.k = ek.multiply(i).normalize();
