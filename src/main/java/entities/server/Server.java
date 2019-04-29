@@ -49,6 +49,7 @@ public class Server extends AbstractEntitiy {
             InvalidAlgorithmParameterException,
             NoSuchPaddingException, InvalidKeySpecException {
 
+        Timestamps.getTimelist().add(System.nanoTime()+", 2");
         this.pid = pid;
         ByteArrayOutputStream outputStream = stream(nonce);
 
@@ -85,6 +86,8 @@ public class Server extends AbstractEntitiy {
             NoSuchAlgorithmException,
             InvalidKeyException,
             SignatureException, NoSuchProviderException, InvalidKeySpecException {
+
+        Timestamps.getTimelist().add(System.nanoTime()+", 8");
 
         ByteArrayOutputStream outputStream3 = new ByteArrayOutputStream();
         outputStream3.write(sid);

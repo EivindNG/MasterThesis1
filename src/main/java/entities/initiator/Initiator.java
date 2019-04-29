@@ -56,9 +56,10 @@ public class Initiator extends AbstractEntitiy {
 
         PublicKeyList.getKeyList().put(this, SkPk.getPublic());
 
+
     }
 
-    public void startServer() throws
+    public void startServer(Server server) throws
             IOException,
             NoSuchAlgorithmException,
             SignatureException,
@@ -70,6 +71,7 @@ public class Initiator extends AbstractEntitiy {
             InvalidAlgorithmParameterException,
             IllegalBlockSizeException, InvalidKeySpecException {
 
+        Timestamps.getTimelist().add(System.nanoTime()+", 1");
         this.nonce = Nonce.Nonce();
         this.pid = PublicKeyList.getKeyList();
         ByteArrayOutputStream outputStream = stream();
@@ -78,13 +80,15 @@ public class Initiator extends AbstractEntitiy {
 
             this.pidIDs.add(entity.getId());
         }
-
+/*
         for (AbstractEntitiy  entity: pid.keySet()){
 
             if (entity instanceof Server) {
                 this.server = (Server) entity;
             }
         }
+*/
+        this.server = server;
 
         server.submitNonce(nonce, this.pid, Signing.Sign(SkPk, outputStream.toByteArray()), this);
     }
@@ -108,6 +112,7 @@ public class Initiator extends AbstractEntitiy {
             IllegalBlockSizeException,
             ClassNotFoundException, InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
 
+        Timestamps.getTimelist().add(System.nanoTime()+", 3");
         ByteArrayOutputStream outputStream2 = stream();
 
         outputStream2.write(KeyEncryptionKey.getEncoded(false));
@@ -116,7 +121,9 @@ public class Initiator extends AbstractEntitiy {
         if (SignVerifyer.Verify(sign, PublicKeyList.getKeyList().get(server), data)){
             this.KeyEncryptionKey = KeyEncryptionKey;
             this.sid = sidGenerator.GenerateSid(id, nonce, pid, KeyEncryptionKey);
+            /*
             System.out.println("Great succsess, STAGE 1");
+            */
             EncapAndCreateKey();
         }
         else{
@@ -142,7 +149,7 @@ public class Initiator extends AbstractEntitiy {
             SignatureException,
             ClassNotFoundException,
             InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
-
+        Timestamps.getTimelist().add(System.nanoTime()+", 4");
 
         KeyEncapsulation Encap = new KeyEncapsulation(KeyEncryptionKey);
         byte[] originalKey = KeyDerivation.KDF(BigInteger.valueOf(1), Encap.getK().getAffineXCoord().toBigInteger(), this.sid);
@@ -160,14 +167,16 @@ public class Initiator extends AbstractEntitiy {
         this.iv = new IvParameterSpec(IV);
         */
 
+        /*
         System.out.println("Initiator key: " + SharedEncryptionKey.getAlgorithm()+" "+
                 SharedEncryptionKey.getEncoded().length + "bytes "+
                 Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded())+iv +"\n");
-
+        */
 
         for (AbstractEntitiy  entity: pid.keySet()){
 
             if (entity instanceof Responder){
+
                 Responder responder = (Responder) entity;
                 EncryptionPk encryptedData = new EncryptionPk(pid.get(responder), Encap.getC(), this.KeyEncryptionKey, Tau, sid, pidIDs);
                 responder.DecryptData(encryptedData,Signing.Sign(SkPk,encryptedData.getCiphertext()),this, server);

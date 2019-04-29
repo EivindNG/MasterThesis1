@@ -4,6 +4,10 @@ import entities.initiator.Initiator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import entities.responder.Responder;
 import entities.server.Server;
+import sun.jvm.hotspot.memory.SystemDictionary;
+import util.PublicKeyList;
+import util.Timestamps;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -34,57 +38,72 @@ public class Main {
 
         Security.addProvider(new BouncyCastleProvider());
 
-        /*
-        List<Long> timelist= new ArrayList();
-        for(int a = 1; a < 10001; a=a*10) {
-            for (int x = 0; x < 300; x++) {
+        for (int x = 0; x < 500; x++) {
 
-                long time = System.nanoTime();
-*/
-        Server test2 = new Server();
+            Server test2 = new Server();
 
-        ArrayList<Responder> responderList = new ArrayList<Responder>();
+            ArrayList<Responder> responderList = new ArrayList<Responder>();
 
-        for (int i = 0; i < 2; i++) {
-            System.out.println("test");
-            responderList.add(new Responder());
+            for (int i = 0; i < 1; i++) {
+
+                responderList.add(new Responder());
+            }
+
+            Initiator test1 = new Initiator();
+
+            test1.startServer(test2);
+
+            PublicKeyList.getKeyList().clear();
+                /*
+                PublicKeyList.getKeyList().clear();
+                responderList.clear();
+            */
         }
 
-        Initiator test1 = new Initiator();
 
-        test1.startServer();
-/*
-                long time2 = System.nanoTime();
+        List<String> timelist2 = Timestamps.getTimelist().subList(Timestamps.getTimelist().size()*9/10, Timestamps.getTimelist().size());
 
-                timelist.add(time2 - time);
 
+
+
+        List<Long> timelist1 = new ArrayList<>();
+
+
+            for (int y = 0; y < timelist2.size()-1; y++) {
+                timelist1.add(Long.parseLong(timelist2.get(y + 1).split(", ")[0]) - Long.parseLong(timelist2.get(y).split(", ")[0]));
             }
 
-            timelist = timelist.subList(250, timelist.size());
+
+            List<Long> timelist3 = new ArrayList<>();
+            for (int f = 8; f < timelist1.size(); f = f + 9) {
+                timelist3.add(timelist1.get(f));
+                System.out.println(f);
+            }
+
+
             double average = 0.0;
 
-            for (long element : timelist) {
+            for (long element : timelist3) {
                 average = average + element;
             }
-            average = average / timelist.size();
+            average = average / timelist3.size();
 
             double std = 0.0;
 
-            for (long element : timelist) {
+            for (long element : timelist3) {
                 std = std + Math.pow((element - average), 2);
             }
-            std = Math.sqrt(std / timelist.size());
+            std = Math.sqrt(std / timelist3.size());
 
-            System.out.println(a + " " + average + " " + std);
-            timelist.clear();
+            System.out.println(1 + " " + average + " " + std);
         }
-/*
-        test1.startServer();
 
+
+/*
         InitiatorShare shareFile = new InitiatorShare(test1.getIv(),test1.getSharedEncryptionKey(),new File("C:\\Users\\Lenovo\\Documents\\JavaFileSharingTest\\InitiatorSecret.txt"));
 
         ResponderRetriveFile decyptSharedFile = new ResponderRetriveFile(responderList.get(0).getIv(),responderList.get(0).getSharedEncryptionKey(),new File("C:\\Users\\Lenovo\\Documents\\JavaFileSharingTest\\ResponderDecryptedSharedFile.txt"), new File("C:\\Users\\Lenovo\\Documents\\JavaFileSharingTest\\SharedCloudFile.txt"));
         */
     }
-}
+
 

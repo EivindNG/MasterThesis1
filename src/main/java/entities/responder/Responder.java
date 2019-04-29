@@ -64,12 +64,14 @@ public class Responder extends AbstractEntitiy {
             NoSuchPaddingException,
             IOException,
             InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
+        Timestamps.getTimelist().add(System.nanoTime()+", 6");
+
         if (SignVerifyer.Verify(sign,PublicKeyList.getKeyList().get(initiator),encryptedData.getCiphertext())){
             decryptedData = DecryptionSk.Decrypt(encryptedData,SkPk.getPrivate());
             this.server = server;
-
+            /*
             System.out.println("Great success, STAGE 2");
-
+            */
             ByteArrayInputStream i = new ByteArrayInputStream(decryptedData.getPidIDs());
             ObjectInputStream inputStream = new ObjectInputStream(i);
             this.pidIDs = (ArrayList) inputStream.readObject();
@@ -87,7 +89,7 @@ public class Responder extends AbstractEntitiy {
             SignatureException,
             InvalidKeyException,
             NoSuchProviderException, InvalidKeySpecException {
-
+        Timestamps.getTimelist().add(System.nanoTime()+", 7");
         blind = new Blind(C);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -107,7 +109,7 @@ public class Responder extends AbstractEntitiy {
             NoSuchAlgorithmException,
             InvalidKeyException,
             SignatureException, NoSuchProviderException, InvalidKeySpecException {
-
+        Timestamps.getTimelist().add(System.nanoTime()+", 9");
         ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream();
         outputStream2.write(sid);
         outputStream2.write(blindk.getEncoded(false));
@@ -132,11 +134,14 @@ public class Responder extends AbstractEntitiy {
     public void ValidateKey(byte[] tauR){
 
         if (Arrays.equals(decryptedData.getTau(),tauR)){
+            Timestamps.getTimelist().add(System.nanoTime()+", 10");
+            return;
+            /*
             System.out.println("Great success, STAGE 3. Key is shared" + "\n");
             System.out.println("Responder key: " + SharedEncryptionKey.getAlgorithm()+" "+
                     SharedEncryptionKey.getEncoded().length+"bytes " +
                     Base64.getEncoder().encodeToString(SharedEncryptionKey.getEncoded()));
-
+*/
 
         }
         else {
